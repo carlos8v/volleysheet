@@ -1,6 +1,5 @@
 import Head from "next/head";
 // import { Header } from "./Header";
-// import { Sidebar } from "./Sidebar";
 import { Fragment, type PropsWithChildren } from "react";
 
 // import { Toaster } from "@server/components/ui/toaster";
@@ -51,7 +50,7 @@ Page.Portal = function Portal({ children }: PropsWithChildren) {
 
 Page.Main = function Main({ children }: PropsWithChildren) {
   return (
-    <div className="mb-12 mt-8 flex w-full max-w-7xl flex-1 gap-24 px-4">
+    <div className="mb-12 mt-8 flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 lg:flex-row">
       {children}
     </div>
   );
@@ -64,4 +63,15 @@ Page.Content = function Content({
   return <div className={`flex flex-1 flex-col ${className}`}>{children}</div>;
 };
 
-// Page.Sidebar = Sidebar;
+Page.Sidebar = function Sidebar({
+  children,
+  className,
+}: PropsWithChildren<{ className?: string }>) {
+  return (
+    <aside
+      className={`flex h-full w-full max-w-5xl flex-col gap-1 lg:max-w-sm ${className}`}
+    >
+      {children}
+    </aside>
+  );
+};

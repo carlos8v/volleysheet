@@ -97,6 +97,8 @@ export const contracts = mysqlTable(
       "MIDDLE_BLOCKER",
     ]),
     teamId: varchar("teamId", { length: 256 }).notNull(),
+    operational: boolean("operational").default(true),
+    expiresDate: timestamp("expiresDate"),
     playerId: varchar("playerId", { length: 256 }).notNull(),
   },
   (contract) => ({

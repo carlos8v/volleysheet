@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { contracts, players, stats, teams } from "@/server/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 export const teamsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -16,7 +16,7 @@ export const teamsRouter = createTRPCRouter({
     }));
   }),
   getPlayer: publicProcedure
-    .input(z.object({ playerId: z.string().uuid(), teamId: z.string().uuid() }))
+    .input(z.object({ playerId: z.string().uuid() }))
     .query(async ({ input, ctx }) => {
       const [player] = await ctx.db
         .select({
@@ -45,14 +45,16 @@ export const teamsRouter = createTRPCRouter({
       }
 
       const [contract] = await ctx.db
-        .select()
+        .select({
+          team: teams.name,
+          jerseyNumber: contracts.jerseyNumber,
+          position: contracts.position,
+          expiresDate: contracts.expiresDate,
+        })
         .from(contracts)
-        .where(
-          and(
-            eq(contracts.teamId, input.teamId),
-            eq(contracts.playerId, input.playerId),
-          ),
-        )
+        .where(and(eq(contracts.playerId, input.playerId)))
+        .innerJoin(teams, eq(contracts.teamId, teams.id))
+        .orderBy(desc(contracts.operational))
         .limit(1);
 
       if (!contract) {

@@ -156,7 +156,7 @@ export const PlayerStats = ({
             height="100%"
             width="100%"
             viewBox="0 0 202 202"
-            stroke-width="2"
+            strokeWidth="2"
           >
             <polygon
               fill="var(--foreground)"
