@@ -30,6 +30,7 @@ export const players = mysqlTable(
       .$defaultFn(() => randomUUID())
       .notNull(),
     name: varchar("name", { length: 256 }).notNull(),
+    photoUrl: varchar("photoUrl", { length: 256 }),
     country: varchar("country", { length: 3 }).default("BRA"),
     handedness: mysqlEnum("handedness", ["UNKNOWN", "LEFT", "RIGHT"]).default(
       "RIGHT",

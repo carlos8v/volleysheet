@@ -9,6 +9,8 @@ import { api } from "@/utils/api";
 
 import { Page } from "@/components/Page";
 import { PlayerStats } from "@/components/PlayerStats";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatName } from "@/lib/formatName";
 
 export const getServerSideProps: GetServerSideProps<{
   playerId: string;
@@ -43,14 +45,14 @@ const positionsMap = new Map([
   ["LIBERO", "Líbero"],
   ["OPPOSITE", "Oposto"],
   ["SETTER", "Levantador"],
-  ["WING_SPIKER", "Ponta"],
+  ["WING_SPIKER", "Ponteiro"],
   ["MIDDLE_BLOCKER", "Central"],
 ]);
 
 export default function PlayerPage({
   playerId,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { data, isLoading, error } = api.teams.getPlayer.useQuery({
+  const { data, isLoading, error } = api.players.getById.useQuery({
     playerId,
   });
 
@@ -87,10 +89,15 @@ export default function PlayerPage({
             <div className="flex h-full flex-col md:flex-row">
               <section className="mb-4 w-full border-b border-zinc-800 pb-4 md:mb-0 md:border-b-0 md:border-r md:pb-0">
                 <div className="mb-4 flex w-full flex-col items-center justify-center pt-4">
-                  <img
-                    src="https://avatars.githubusercontent.com/u/53836455?v=4"
-                    className="mb-2 h-32 w-32 rounded-full"
-                  />
+                  <Avatar className="mb-2 h-32 w-32">
+                    <AvatarImage
+                      src={data?.player?.photoUrl ?? ""}
+                      alt={data?.player?.name ?? ""}
+                    />
+                    <AvatarFallback className="bg-zinc-800">
+                      {formatName(data?.player?.name ?? "Desconhecido")}
+                    </AvatarFallback>
+                  </Avatar>
                   <strong className="text-lg">{data?.player?.name}</strong>
                 </div>
                 <div className="grid grid-cols-2 gap-4 py-4 md:grid-cols-3">
