@@ -60,7 +60,7 @@ export default function PlayerPage({
     return null;
   }
 
-  if (error || !data) {
+  if (error ?? !data) {
     <p>Não foi possível recupera informações do jogador</p>;
   }
 
