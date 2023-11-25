@@ -122,9 +122,9 @@ export const PlayerStats = ({
   block,
 }: PlayerStatsProps) => {
   return (
-    <div className="w-full max-w-[500px] p-4">
+    <div className="w-full md:max-w-[500px] px-4 pb-8 pt-3">
       <div className="mb-8">
-        <p className="font-medium">Visão geral sobre atributos</p>
+        <p className="text-sm font-medium">Visão geral sobre atributos</p>
       </div>
       <div className="relative mx-auto block w-fit px-10 py-4">
         <div className="absolute left-1/2 top-0 flex h-fit -translate-x-2/4 -translate-y-2/4 select-none items-center text-sm font-medium text-zinc-400">
