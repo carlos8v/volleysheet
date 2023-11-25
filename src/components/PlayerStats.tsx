@@ -92,9 +92,9 @@ function Badge({ level }: { level: number }) {
       className={classnames({
         "ml-1 block flex items-center justify-center rounded px-1.5": true,
         "bg-zinc-800 text-white": level === 0,
-        "bg-red-400 text-black": level === 1,
-        "bg-red-500 text-black": level === 2,
-        "bg-orange-400 text-black": level === 3,
+        "bg-red-500 text-black": level === 1,
+        "bg-orange-500 text-black": level === 2,
+        "bg-yellow-500 text-black": level === 3,
         "bg-green-500 text-black": level === 4,
         "bg-green-400 text-black": level === 5,
       })}
