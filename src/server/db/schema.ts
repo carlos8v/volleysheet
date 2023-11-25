@@ -30,14 +30,12 @@ export const players = mysqlTable(
       .$defaultFn(() => randomUUID())
       .notNull(),
     name: varchar("name", { length: 256 }).notNull(),
-    position: mysqlEnum("position", [
-      "UNKNOWN",
-      "LIBERO",
-      "OPPOSITE",
-      "SETTER",
-      "WING_SPIKER",
-      "MIDDLE_BLOCKER",
-    ]),
+    country: varchar("country", { length: 3 }).default("BRA"),
+    handedness: mysqlEnum("handedness", ["UNKNOWN", "LEFT", "RIGHT"]).default(
+      "RIGHT",
+    ),
+    age: int("age"),
+    height: int("height"),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -53,7 +51,7 @@ export const playersRelations = relations(players, ({ many }) => ({
 }));
 
 export const stats = mysqlTable("stats", {
-  playerId: varchar("id", { length: 256 }).primaryKey().notNull(),
+  playerId: varchar("playerId", { length: 256 }).primaryKey().notNull(),
   stamina: int("stamina"),
   attack: int("attack"),
   defence: int("defence"),
@@ -89,6 +87,15 @@ export const teamsRelations = relations(teams, ({ many }) => ({
 export const contracts = mysqlTable(
   "contracts",
   {
+    jerseyNumber: int("jerseyNumber").notNull(),
+    position: mysqlEnum("position", [
+      "UNKNOWN",
+      "LIBERO",
+      "OPPOSITE",
+      "SETTER",
+      "WING_SPIKER",
+      "MIDDLE_BLOCKER",
+    ]),
     teamId: varchar("teamId", { length: 256 }).notNull(),
     playerId: varchar("playerId", { length: 256 }).notNull(),
   },
