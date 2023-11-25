@@ -9,8 +9,8 @@ import {
   int,
   mysqlEnum,
   mysqlTableCreator,
-  primaryKey,
   timestamp,
+  unique,
   varchar,
 } from "drizzle-orm/mysql-core";
 
@@ -26,7 +26,6 @@ export const players = mysqlTable(
   "players",
   {
     id: varchar("id", { length: 256 })
-      .primaryKey()
       .$defaultFn(() => randomUUID())
       .notNull(),
     name: varchar("name", { length: 256 }).notNull(),
@@ -42,8 +41,9 @@ export const players = mysqlTable(
       .notNull(),
     updatedAt: timestamp("updatedAt").onUpdateNow(),
   },
-  (example) => ({
-    nameIndex: index("name_idx").on(example.name),
+  (player) => ({
+    playerUniqueId: unique().on(player.id),
+    nameIndex: index("name_idx").on(player.name),
   }),
 );
 
@@ -51,15 +51,21 @@ export const playersRelations = relations(players, ({ many }) => ({
   contracts: many(contracts),
 }));
 
-export const stats = mysqlTable("stats", {
-  playerId: varchar("playerId", { length: 256 }).primaryKey().notNull(),
-  stamina: int("stamina"),
-  attack: int("attack"),
-  defence: int("defence"),
-  block: int("block"),
-  set: int("set"),
-  serve: int("serve"),
-});
+export const stats = mysqlTable(
+  "stats",
+  {
+    playerId: varchar("playerId", { length: 256 }).notNull(),
+    stamina: int("stamina"),
+    attack: int("attack"),
+    defence: int("defence"),
+    block: int("block"),
+    set: int("set"),
+    serve: int("serve"),
+  },
+  (stat) => ({
+    statUniqueId: unique().on(stat.playerId),
+  }),
+);
 
 export const statsRelations = relations(stats, ({ one }) => ({
   player: one(players, {
@@ -68,18 +74,23 @@ export const statsRelations = relations(stats, ({ one }) => ({
   }),
 }));
 
-export const teams = mysqlTable("teams", {
-  id: varchar("id", { length: 256 })
-    .primaryKey()
-    .$defaultFn(() => randomUUID())
-    .notNull(),
-  name: varchar("name", { length: 256 }).notNull(),
-  operational: boolean("operational").default(true),
-  createdAt: timestamp("created_at")
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
-  updatedAt: timestamp("updatedAt").onUpdateNow(),
-});
+export const teams = mysqlTable(
+  "teams",
+  {
+    id: varchar("id", { length: 256 })
+      .$defaultFn(() => randomUUID())
+      .notNull(),
+    name: varchar("name", { length: 256 }).notNull(),
+    operational: boolean("operational").default(true),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt").onUpdateNow(),
+  },
+  (team) => ({
+    teamUniqueId: unique().on(team.id),
+  }),
+);
 
 export const teamsRelations = relations(teams, ({ many }) => ({
   contracts: many(contracts),
@@ -88,6 +99,9 @@ export const teamsRelations = relations(teams, ({ many }) => ({
 export const contracts = mysqlTable(
   "contracts",
   {
+    id: varchar("id", { length: 256 })
+      .$defaultFn(() => randomUUID())
+      .notNull(),
     jerseyNumber: int("jerseyNumber").notNull(),
     position: mysqlEnum("position", [
       "UNKNOWN",
@@ -103,7 +117,7 @@ export const contracts = mysqlTable(
     playerId: varchar("playerId", { length: 256 }).notNull(),
   },
   (contract) => ({
-    pk: primaryKey(contract.playerId, contract.teamId),
+    contractUniqueId: unique().on(contract.id),
   }),
 );
 
