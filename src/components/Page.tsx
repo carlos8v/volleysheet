@@ -60,7 +60,9 @@ Page.Content = function Content({
   className = "",
   children,
 }: PropsWithChildren<{ className?: string }>) {
-  return <div className={`flex flex-1 flex-col ${className}`}>{children}</div>;
+  return (
+    <div className={`flex flex-col lg:flex-1 ${className}`}>{children}</div>
+  );
 };
 
 Page.Sidebar = function Sidebar({
