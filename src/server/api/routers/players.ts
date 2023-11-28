@@ -5,7 +5,7 @@ import { contracts, players, stats, teams } from "@/server/db/schema";
 import { and, desc, eq, sql } from "drizzle-orm";
 
 const orderMap = new Map([
-  ["UNKNOWN", 0],
+  ["ALL", 0],
   ["E", 5],
   ["D", 10],
   ["C", 15],
@@ -16,7 +16,7 @@ const orderMap = new Map([
 
 export const playersRouter = createTRPCRouter({
   getAll: publicProcedure
-    .input(z.enum(["E", "D", "C", "B", "A", "S", "UNKNOWN"]).default("UNKNOWN"))
+    .input(z.enum(["E", "D", "C", "B", "A", "S", "ALL"]).default("ALL"))
     .query(async ({ ctx, input }) => {
       const orderByScore = orderMap.get(input);
 

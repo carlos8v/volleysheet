@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { api } from "@/utils/api";
 
@@ -8,11 +8,12 @@ import { classnames } from "@/lib/classnames";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-type AvaliableRanks = "UNKNOWN" | "S" | "A" | "B" | "C" | "D" | "E";
+type AvaliableRanks = "ALL" | "S" | "A" | "B" | "C" | "D" | "E";
 const avaliableRanks: { label: string; value: AvaliableRanks }[] = [
   {
-    value: "UNKNOWN",
+    value: "ALL",
     label: "Todos",
   },
   {
@@ -42,14 +43,37 @@ const avaliableRanks: { label: string; value: AvaliableRanks }[] = [
 ];
 
 export const PlayersList = () => {
-  const [rank, setRank] = useState<AvaliableRanks>("UNKNOWN");
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [rank, setRank] = useState<AvaliableRanks>("ALL");
   const { data, isLoading } = api.players.getAll.useQuery(rank);
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams);
+
+      params.set(name, value);
+      return `?${params.toString()}`;
+    },
+    [searchParams],
+  );
+
+  useEffect(() => {
+    if (searchParams.has("rank")) {
+      setRank(searchParams.get("rank")?.toUpperCase() as AvaliableRanks);
+    } else {
+      setRank("ALL");
+    }
+  }, [searchParams]);
 
   return (
     <>
       <Tabs
         className="my-4 flex gap-2 overflow-x-scroll md:overflow-x-hidden"
-        defaultValue="UNKNOWN"
+        defaultValue="ALL"
+        value={rank}
       >
         <TabsList>
           {avaliableRanks.map(({ value, label }) => (
@@ -61,7 +85,9 @@ export const PlayersList = () => {
                 "font-medium text-zinc-100": rank === value,
                 "text-zinc-500 hover:text-white": rank !== value,
               })}
-              onClick={() => setRank(value)}
+              onClick={() =>
+                router.push(`${pathname}${createQueryString("rank", value)}`)
+              }
             >
               {label}
             </TabsTrigger>
