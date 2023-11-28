@@ -1,7 +1,7 @@
 import { classnames } from "@/lib/classnames";
 
-const dX = 2;
-const dY = 2;
+const dX = 5;
+const dY = 5;
 const mX = 100;
 const mY = 100;
 
@@ -173,7 +173,7 @@ export const PlayerStats = ({
           BLO
           <Badge level={block} />
         </div>
-        <div className="h-[204px] w-[204px]">
+        <div className="h-[200px] w-[200px]">
           <svg height="100%" width="100%" viewBox="0 0 210 210" strokeWidth="2">
             <polygon
               fill="var(--foreground)"
