@@ -2,22 +2,50 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { contracts, players, stats, teams } from "@/server/db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
+
+const orderMap = new Map([
+  ["UNKNOWN", 0],
+  ["E", 5],
+  ["D", 10],
+  ["C", 15],
+  ["B", 20],
+  ["A", 25],
+  ["S", 30],
+]);
 
 export const playersRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    return ctx.db
-      .select({
-        id: players.id,
-        name: players.name,
-        contract: {
+  getAll: publicProcedure
+    .input(z.enum(["E", "D", "C", "B", "A", "S", "UNKNOWN"]).default("UNKNOWN"))
+    .query(async ({ ctx, input }) => {
+      const orderByScore = orderMap.get(input);
+
+      return await ctx.db
+        .select({
+          id: players.id,
+          name: players.name,
+          score: sql<number>`sum(
+            ${stats.stamina} +
+            ${stats.attack} +
+            ${stats.defence} +
+            ${stats.block} +
+            ${stats.set} +
+            ${stats.serve}
+          )`.mapWith(Number),
           jerseyNumber: contracts.jerseyNumber,
-        },
-      })
-      .from(players)
-      .orderBy(desc(players.createdAt))
-      .innerJoin(contracts, eq(contracts.playerId, players.id));
-  }),
+        })
+        .from(players)
+        .innerJoin(stats, eq(stats.playerId, players.id))
+        .innerJoin(contracts, eq(contracts.playerId, players.id))
+        .groupBy(players.id, players.name, contracts.jerseyNumber)
+        .having(
+          ({ score }) =>
+            sql`${score} >= ${orderByScore} and ${score} <= ${
+              orderByScore ? orderByScore + 4 : 30
+            }`,
+        )
+        .orderBy(players.name);
+    }),
   getById: publicProcedure
     .input(z.object({ playerId: z.string().uuid() }))
     .query(async ({ input, ctx }) => {
