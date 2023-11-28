@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback } from "react";
 
 import { api } from "@/utils/api";
 
@@ -8,9 +9,8 @@ import { classnames } from "@/lib/classnames";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-type AvaliableRanks = "ALL" | "S" | "A" | "B" | "C" | "D" | "E";
+export type AvaliableRanks = "ALL" | "S" | "A" | "B" | "C" | "D" | "E";
 const avaliableRanks: { label: string; value: AvaliableRanks }[] = [
   {
     value: "ALL",
@@ -42,12 +42,11 @@ const avaliableRanks: { label: string; value: AvaliableRanks }[] = [
   },
 ];
 
-export const PlayersList = () => {
-  const pathname = usePathname();
+export const PlayersList = ({ rank }: { rank: AvaliableRanks }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [rank, setRank] = useState<AvaliableRanks>("ALL");
   const { data, isLoading } = api.players.getAll.useQuery(rank);
 
   const createQueryString = useCallback(
@@ -59,14 +58,6 @@ export const PlayersList = () => {
     },
     [searchParams],
   );
-
-  useEffect(() => {
-    if (searchParams.has("rank")) {
-      setRank(searchParams.get("rank")?.toUpperCase() as AvaliableRanks);
-    } else {
-      setRank("ALL");
-    }
-  }, [searchParams]);
 
   return (
     <>
