@@ -115,6 +115,7 @@ interface PlayerStatsProps {
   defence: number;
   set: number;
   serve: number;
+  score: number;
 }
 
 const ranks = [
@@ -133,9 +134,9 @@ export const PlayerStats = ({
   stamina = 0,
   set = 0,
   block = 0,
+  score,
 }: PlayerStatsProps) => {
   function getRank() {
-    const score = attack + defence + serve + stamina + set + block;
     return (
       ranks.reduce((acc, rank) => (score >= rank.min ? rank : acc), ranks[0])
         ?.label ?? "Não classificado"

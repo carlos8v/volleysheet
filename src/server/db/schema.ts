@@ -4,7 +4,6 @@
 import { randomUUID } from "crypto";
 import { relations, sql } from "drizzle-orm";
 import {
-  boolean,
   index,
   int,
   mysqlEnum,
@@ -36,7 +35,16 @@ export const players = mysqlTable(
     ),
     age: int("age"),
     height: int("height"),
-    createdAt: timestamp("created_at")
+    jerseyNumber: int("jerseyNumber").notNull(),
+    position: mysqlEnum("position", [
+      "UNKNOWN",
+      "LIBERO",
+      "OPPOSITE",
+      "SETTER",
+      "WING_SPIKER",
+      "MIDDLE_BLOCKER",
+    ]),
+    createdAt: timestamp("createdAt")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updatedAt").onUpdateNow(),
@@ -46,10 +54,6 @@ export const players = mysqlTable(
     nameIndex: index("name_idx").on(player.name),
   }),
 );
-
-export const playersRelations = relations(players, ({ many }) => ({
-  contracts: many(contracts),
-}));
 
 export const stats = mysqlTable(
   "stats",
@@ -61,6 +65,7 @@ export const stats = mysqlTable(
     block: int("block"),
     set: int("set"),
     serve: int("serve"),
+    score: int("score"),
   },
   (stat) => ({
     statUniqueId: unique().on(stat.playerId),
@@ -70,64 +75,6 @@ export const stats = mysqlTable(
 export const statsRelations = relations(stats, ({ one }) => ({
   player: one(players, {
     fields: [stats.playerId],
-    references: [players.id],
-  }),
-}));
-
-export const teams = mysqlTable(
-  "teams",
-  {
-    id: varchar("id", { length: 256 })
-      .$defaultFn(() => randomUUID())
-      .notNull(),
-    name: varchar("name", { length: 256 }).notNull(),
-    operational: boolean("operational").default(true),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updatedAt").onUpdateNow(),
-  },
-  (team) => ({
-    teamUniqueId: unique().on(team.id),
-  }),
-);
-
-export const teamsRelations = relations(teams, ({ many }) => ({
-  contracts: many(contracts),
-}));
-
-export const contracts = mysqlTable(
-  "contracts",
-  {
-    id: varchar("id", { length: 256 })
-      .$defaultFn(() => randomUUID())
-      .notNull(),
-    jerseyNumber: int("jerseyNumber").notNull(),
-    position: mysqlEnum("position", [
-      "UNKNOWN",
-      "LIBERO",
-      "OPPOSITE",
-      "SETTER",
-      "WING_SPIKER",
-      "MIDDLE_BLOCKER",
-    ]),
-    teamId: varchar("teamId", { length: 256 }).notNull(),
-    operational: boolean("operational").default(true),
-    expiresDate: timestamp("expiresDate"),
-    playerId: varchar("playerId", { length: 256 }).notNull(),
-  },
-  (contract) => ({
-    contractUniqueId: unique().on(contract.id),
-  }),
-);
-
-export const contractsRelations = relations(contracts, ({ one }) => ({
-  team: one(teams, {
-    fields: [contracts.teamId],
-    references: [teams.id],
-  }),
-  player: one(players, {
-    fields: [contracts.playerId],
     references: [players.id],
   }),
 }));

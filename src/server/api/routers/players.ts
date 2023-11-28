@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { contracts, players, stats, teams } from "@/server/db/schema";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { players, stats } from "@/server/db/schema";
+import { eq, sql } from "drizzle-orm";
 
 const orderMap = new Map([
   ["ALL", 0],
@@ -24,21 +24,12 @@ export const playersRouter = createTRPCRouter({
         .select({
           id: players.id,
           name: players.name,
-          score: sql<number>`sum(
-            ${stats.stamina} +
-            ${stats.attack} +
-            ${stats.defence} +
-            ${stats.block} +
-            ${stats.set} +
-            ${stats.serve}
-          )`.mapWith(Number),
-          jerseyNumber: contracts.jerseyNumber,
+          score: stats.score,
+          jerseyNumber: players.jerseyNumber,
         })
         .from(players)
         .innerJoin(stats, eq(stats.playerId, players.id))
-        .innerJoin(contracts, eq(contracts.playerId, players.id))
-        .groupBy(players.id, players.name, contracts.jerseyNumber)
-        .having(
+        .where(
           ({ score }) =>
             sql`${score} >= ${orderByScore} and ${score} <= ${
               orderByScore ? orderByScore + 4 : 30
@@ -58,6 +49,8 @@ export const playersRouter = createTRPCRouter({
           handedness: players.handedness,
           age: players.age,
           height: players.height,
+          jerseyNumber: players.jerseyNumber,
+          position: players.position,
           stats: {
             stamina: stats.stamina,
             attack: stats.attack,
@@ -65,37 +58,18 @@ export const playersRouter = createTRPCRouter({
             block: stats.block,
             set: stats.set,
             serve: stats.serve,
+            score: stats.score,
           },
         })
         .from(players)
-        .where(eq(players.id, input.playerId))
         .innerJoin(stats, eq(stats.playerId, players.id))
+        .where(eq(players.id, input.playerId))
         .limit(1);
 
       if (!player?.id) {
         throw new Error("Jogador não encontrado");
       }
 
-      const [contract] = await ctx.db
-        .select({
-          team: teams.name,
-          jerseyNumber: contracts.jerseyNumber,
-          position: contracts.position,
-          expiresDate: contracts.expiresDate,
-        })
-        .from(contracts)
-        .where(and(eq(contracts.playerId, input.playerId)))
-        .innerJoin(teams, eq(contracts.teamId, teams.id))
-        .orderBy(desc(contracts.operational))
-        .limit(1);
-
-      if (!contract) {
-        throw new Error("Jogador não tem contrato nesse time");
-      }
-
-      return {
-        player,
-        contract,
-      };
+      return player;
     }),
 });
