@@ -50,8 +50,8 @@ export const players = mysqlTable(
     updatedAt: timestamp("updatedAt").onUpdateNow(),
   },
   (player) => ({
-    playerUniqueId: unique().on(player.id),
-    nameIndex: index("name_idx").on(player.name),
+    playerIdIdx: index("id_idx").on(player.id),
+    playerIdUnique: unique().on(player.id),
   }),
 );
 
@@ -68,7 +68,9 @@ export const stats = mysqlTable(
     score: int("score"),
   },
   (stat) => ({
-    statUniqueId: unique().on(stat.playerId),
+    playerIdIdx: index("player_id_idx").on(stat.playerId),
+    playerIdUnique: unique().on(stat.playerId),
+    score: index("score_idx").on(stat.score),
   }),
 );
 
