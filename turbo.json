@@ -34,10 +34,5 @@
       "cache": false
     }
   },
-  "globalEnv": [
-    "DATABASE_HOST",
-    "DATABASE_USER",
-    "DATABASE_PASS",
-    "DATABASE_NAME"
-  ]
+  "globalEnv": ["DATABASE_URL"]
 }
