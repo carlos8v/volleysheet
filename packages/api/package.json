@@ -4,7 +4,6 @@
   "private": true,
   "main": "./index.ts",
   "types": "./index.ts",
-  "license": "MIT",
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "lint": "eslint .",
@@ -13,8 +12,8 @@
   },
   "dependencies": {
     "@volleysheet/db": "workspace:^0.1.0",
-    "@trpc/client": "next",
-    "@trpc/server": "next",
+    "@trpc/client": "^10.43.6",
+    "@trpc/server": "^10.43.6",
     "superjson": "^2.2.1",
     "zod": "^3.22.4"
   },

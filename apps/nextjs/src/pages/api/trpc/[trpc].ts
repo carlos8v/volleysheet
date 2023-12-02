@@ -6,7 +6,7 @@ import { appRouter, createTRPCContext } from "@volleysheet/api";
 // export API handler
 export default createNextApiHandler({
   router: appRouter,
-  createContext: ({ req }) => createTRPCContext({ req: req as Request }),
+  createContext: createTRPCContext,
   onError:
     env.NODE_ENV === "development"
       ? ({ path, error }) => {
