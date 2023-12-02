@@ -1,0 +1,70 @@
+{
+  "name": "volleysheet",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm with-env next build",
+    "clean": "git clean -xdf .next .turbo node_modules",
+    "dev": "pnpm with-env next dev",
+    "lint": "dotenv -v SKIP_ENV_VALIDATION=1 next lint",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "start": "pnpm with-env next start",
+    "typecheck": "tsc --noEmit",
+    "with-env": "dotenv -e ../../.env --"
+  },
+  "dependencies": {
+    "@radix-ui/react-avatar": "^1.0.4",
+    "@radix-ui/react-tabs": "^1.0.4",
+    "@t3-oss/env-nextjs": "^0.7.1",
+    "@tanstack/react-query": "^5.8.7",
+    "@tanstack/react-query-devtools": "^5.8.7",
+    "@tanstack/react-table": "^8.10.7",
+    "@trpc/client": "next",
+    "@trpc/next": "next",
+    "@trpc/react-query": "next",
+    "@trpc/server": "next",
+    "@volleysheet/api": "workspace:^0.1.0",
+    "@volleysheet/db": "workspace:^0.1.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "lucide-react": "^0.293.0",
+    "next": "^14.0.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "superjson": "^2.2.1",
+    "tailwind-merge": "^2.0.0",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@next/eslint-plugin-next": "^14.0.3",
+    "@types/eslint": "^8.44.7",
+    "@types/node": "^18.17.0",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "@volleysheet/eslint-config": "workspace:^0.2.0",
+    "@volleysheet/prettier-config": "workspace:^0.1.0",
+    "@volleysheet/tailwind-config": "workspace:^0.1.0",
+    "@volleysheet/tsconfig": "workspace:^0.1.0",
+    "autoprefixer": "^10.4.16",
+    "dotenv-cli": "^7.3.0",
+    "eslint": "^8.54.0",
+    "postcss": "^8.4.31",
+    "prettier": "^3.1.0",
+    "prettier-plugin-tailwindcss": "^0.5.7",
+    "tailwindcss": "3.3.5",
+    "typescript": "^5.2.2"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@volleysheet/eslint-config/base",
+      "@volleysheet/eslint-config/nextjs",
+      "@volleysheet/eslint-config/react"
+    ]
+  },
+  "prettier": "@volleysheet/prettier-config"
+}

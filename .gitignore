@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+**/**/node_modules
+
 /.pnp
 .pnp.js
 
@@ -13,7 +15,7 @@
 /prisma/db.sqlite-journal
 
 # next.js
-/.next/
+apps/nextjs/.next/
 /out/
 next-env.d.ts
 
@@ -36,7 +38,7 @@ yarn-error.log*
 !.env.example
 
 # vercel
-.vercel
+apps/nextjs/.vercel
 
 # typescript
 *.tsbuildinfo

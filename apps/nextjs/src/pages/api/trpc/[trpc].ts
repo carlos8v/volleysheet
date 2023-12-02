@@ -1,0 +1,18 @@
+import { env } from "@/env.mjs";
+import { createNextApiHandler } from "@trpc/server/adapters/next";
+
+import { appRouter, createTRPCContext } from "@volleysheet/api";
+
+// export API handler
+export default createNextApiHandler({
+  router: appRouter,
+  createContext: ({ req }) => createTRPCContext({ req: req as Request }),
+  onError:
+    env.NODE_ENV === "development"
+      ? ({ path, error }) => {
+          console.error(
+            `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`,
+          );
+        }
+      : undefined,
+});
