@@ -42,3 +42,6 @@ apps/nextjs/.vercel
 
 # typescript
 *.tsbuildinfo
+
+.turbo/
+**/**/.turbo/
