@@ -1,0 +1,38 @@
+{
+  "name": "@volleysheet/db",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "eslint .",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "push": "pnpm with-env drizzle-kit push:mysql",
+    "studio": "pnpm with-env drizzle-kit studio",
+    "typecheck": "tsc --noEmit",
+    "with-env": "dotenv -e ../../.env --"
+  },
+  "dependencies": {
+    "@planetscale/database": "^1.11.0",
+    "drizzle-orm": "^0.29.1",
+    "mysql2": "^3.6.1"
+  },
+  "devDependencies": {
+    "@volleysheet/eslint-config": "workspace:^0.2.0",
+    "@volleysheet/prettier-config": "workspace:^0.1.0",
+    "@volleysheet/tsconfig": "workspace:^0.1.0",
+    "dotenv-cli": "^7.3.0",
+    "drizzle-kit": "^0.20.6",
+    "eslint": "^8.54.0",
+    "prettier": "^3.1.0",
+    "typescript": "^5.2.2"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@volleysheet/eslint-config/base"
+    ]
+  },
+  "prettier": "@volleysheet/prettier-config"
+}
