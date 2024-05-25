@@ -1,16 +1,14 @@
-import z from "zod";
 import type {
   GetServerSideProps,
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
 } from "next";
-
-import { api } from "@/utils/api";
-
 import { Page } from "@/components/Page";
 import { PlayerStats } from "@/components/PlayerStats";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { api } from "@/utils/api";
 import { formatName } from "@/utils/formatName";
+import z from "zod";
 
 export const getServerSideProps: GetServerSideProps<{
   playerId: string;
@@ -56,6 +54,8 @@ export default function PlayerPage({
     playerId,
   });
 
+  const points = api.points.getByPlayerId.useQuery(playerId);
+
   if (isLoading) {
     return null;
   }
@@ -69,7 +69,7 @@ export default function PlayerPage({
       <Page.Title />
       <Page.Portal>
         <Page.Main>
-          <Page.Content className="h-fit max-w-4xl rounded bg-zinc-900">
+          <Page.Content className="h-fit rounded bg-zinc-900 lg:max-w-4xl">
             <div className="flex h-full flex-col md:flex-row">
               <section className="mb-4 w-full border-b border-zinc-800 pb-4 md:mb-0 md:border-b-0 md:border-r md:pb-0">
                 <div className="mb-4 flex w-full flex-col items-center justify-center pt-4">
@@ -144,6 +144,25 @@ export default function PlayerPage({
               />
             </div>
           </Page.Content>
+          <Page.Sidebar className="max-w-4xl rounded bg-zinc-900 px-4 pb-8 pt-3">
+            <p className="font-medium">Pontuações</p>
+            <hr className="my-2" />
+
+            <fieldset className="flex justify-between">
+              <p className="text-sm text-zinc-400">Ataques</p>
+              <p className="font-medium">{points.data?.attack ?? 0}</p>
+            </fieldset>
+
+            <fieldset className="flex justify-between">
+              <p className="text-sm text-zinc-400">Saques</p>
+              <p className="font-medium">{points.data?.serve ?? 0}</p>
+            </fieldset>
+
+            <fieldset className="flex justify-between">
+              <p className="text-sm text-zinc-400">Bloqueios</p>
+              <p className="font-medium">{points.data?.block ?? 0}</p>
+            </fieldset>
+          </Page.Sidebar>
         </Page.Main>
       </Page.Portal>
     </Page>
