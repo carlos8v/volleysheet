@@ -80,3 +80,21 @@ export const statsRelations = relations(stats, ({ one }) => ({
     references: [players.id],
   }),
 }));
+
+export const points = mysqlTable(
+  "points",
+  {
+    id: varchar("id", { length: 256 })
+      .$defaultFn(() => randomUUID())
+      .notNull(),
+    playerId: varchar("playerId", { length: 256 }).notNull(),
+    type: mysqlEnum("type", ["ATTACK", "SERVE", "BLOCK"]).notNull(),
+    createdAt: timestamp("createdAt")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    deletedAt: timestamp("deletedAt"),
+  },
+  (points) => ({
+    playerIdIdx: index("player_id_idx").on(points.playerId),
+  }),
+);
