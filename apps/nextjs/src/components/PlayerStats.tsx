@@ -69,8 +69,10 @@ function calculatePoint({ x, y, angle }: HexagonPoint, level: number) {
 
 function Polygon({
   levels,
+  guideline = false,
 }: {
   levels: [number, number, number, number, number, number];
+  guideline?: boolean;
 }) {
   const paths = [];
 
@@ -84,8 +86,8 @@ function Polygon({
         .map(({ aX, aY }) => `${mX + aX + dX},${mY - aY + dY}`)
         .join(", ")}
       opacity="1"
-      fill="rgba(70, 194, 82, 0.25)"
-      stroke="rgb(70, 194, 82)"
+      fill={guideline ? "transparent" : "rgba(70, 194, 82, 0.25)"}
+      stroke={guideline ? "#18181b" : "rgb(70, 194, 82)"}
     ></polygon>
   );
 }
@@ -150,38 +152,60 @@ export const PlayerStats = ({
         <small className="font-medium text-zinc-400">{getRank()}</small>
       </div>
       <div className="relative mx-auto block w-fit px-10 py-4">
-        <div className="absolute left-1/2 top-0 flex h-fit -translate-x-2/4 -translate-y-2/4 select-none items-center text-sm font-medium text-zinc-400">
+        <div
+          title="Ataque"
+          className="absolute left-1/2 top-0 flex h-fit -translate-x-2/4 -translate-y-2/4 select-none items-center text-sm font-medium text-zinc-400"
+        >
           ATT
           <Badge level={attack} />
         </div>
-        <div className="absolute right-0 top-1/4 flex translate-x-1 select-none items-center text-sm font-medium text-zinc-400">
+        <div
+          title="Passe"
+          className="absolute right-0 top-1/4 flex translate-x-1 select-none items-center text-sm font-medium text-zinc-400"
+        >
           PAS
           <Badge level={defence} />
         </div>
-        <div className="absolute bottom-1/4 right-0 flex translate-x-1.5 select-none items-center text-sm font-medium text-zinc-400">
+        <div
+          title="Saque"
+          className="absolute bottom-1/4 right-0 flex translate-x-1.5 select-none items-center text-sm font-medium text-zinc-400"
+        >
           SAQ
           <Badge level={serve} />
         </div>
-        <div className="absolute bottom-0 left-1/2 flex h-fit -translate-x-2/4 translate-y-2/4 select-none items-center text-sm font-medium text-zinc-400">
+        <div
+          title="Estamina"
+          className="absolute bottom-0 left-1/2 flex h-fit -translate-x-2/4 translate-y-2/4 select-none items-center text-sm font-medium text-zinc-400"
+        >
           EST
           <Badge level={stamina} />
         </div>
-        <div className="absolute bottom-1/4 left-0 flex -translate-x-1.5 select-none items-center text-sm font-medium text-zinc-400">
+        <div
+          title="Levantamento"
+          className="absolute bottom-1/4 left-0 flex -translate-x-1.5 select-none items-center text-sm font-medium text-zinc-400"
+        >
           LEV
           <Badge level={set} />
         </div>
-        <div className="absolute left-0 top-1/4 flex -translate-x-1.5 select-none items-center text-sm font-medium text-zinc-400">
+        <div
+          title="Bloqueio"
+          className="absolute left-0 top-1/4 flex -translate-x-1.5 select-none items-center text-sm font-medium text-zinc-400"
+        >
           BLO
           <Badge level={block} />
         </div>
         <div className="h-[200px] w-[200px]">
           <svg height="100%" width="100%" viewBox="0 0 210 210" strokeWidth="2">
             <polygon
-              fill="var(--foreground)"
+              fill="#09090b"
               points={hexagonPoints
                 .map(({ x, y }) => `${x + dX},${y + dY}`)
                 .join(", ")}
             ></polygon>
+            <Polygon guideline levels={[1, 1, 1, 1, 1, 1]} />
+            <Polygon guideline levels={[2, 2, 2, 2, 2, 2]} />
+            <Polygon guideline levels={[3, 3, 3, 3, 3, 3]} />
+            <Polygon guideline levels={[4, 4, 4, 4, 4, 4]} />
             <Polygon levels={[attack, defence, serve, stamina, set, block]} />
           </svg>
         </div>
