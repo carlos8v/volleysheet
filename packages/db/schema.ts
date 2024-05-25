@@ -95,6 +95,7 @@ export const points = mysqlTable(
     deletedAt: timestamp("deletedAt"),
   },
   (points) => ({
+    pointIdUnique: unique().on(points.id),
     playerIdIdx: index("player_id_idx").on(points.playerId),
   }),
 );
