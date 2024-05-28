@@ -18,12 +18,12 @@ const hexagonPoints: HexagonPoint[] = [
     angle: 90,
   },
   {
-    x: 186.5,
+    x: 186.6,
     y: 50,
     angle: 30,
   },
   {
-    x: 186.5,
+    x: 186.6,
     y: 150,
     angle: -30,
   },
@@ -33,12 +33,12 @@ const hexagonPoints: HexagonPoint[] = [
     angle: -90,
   },
   {
-    x: 13.5,
+    x: 13.4,
     y: 150,
     angle: -150,
   },
   {
-    x: 13.5,
+    x: 13.4,
     y: 50,
     angle: 150,
   },
