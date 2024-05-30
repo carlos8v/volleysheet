@@ -30,6 +30,7 @@ export const playersRouter = createTRPCRouter({
           id: schema.players.id,
           name: schema.players.name,
           score: schema.stats.score,
+          position: schema.players.position,
           jerseyNumber: schema.players.jerseyNumber,
         })
         .from(schema.players)

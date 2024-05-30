@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { api } from "@/utils/api";
 import { formatName } from "@/utils/formatName";
 import z from "zod";
+import { positionsMap } from '@/utils/positions';
 
 export const getServerSideProps: GetServerSideProps<{
   playerId: string;
@@ -35,16 +36,6 @@ const handednessMap = new Map([
   ["UNKNOWN", "N/A"],
   ["LEFT", "Canhoto"],
   ["RIGHT", "Destro"],
-]);
-
-const positionsMap = new Map([
-  [null, "N/A"],
-  ["UNKNOWN", "N/A"],
-  ["LIBERO", "Líbero"],
-  ["OPPOSITE", "Oposto"],
-  ["SETTER", "Levantador"],
-  ["WING_SPIKER", "Ponteiro"],
-  ["MIDDLE_BLOCKER", "Central"],
 ]);
 
 export default function PlayerPage({
