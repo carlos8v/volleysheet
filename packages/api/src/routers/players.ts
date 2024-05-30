@@ -1,9 +1,10 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
-import { eq, sql, schema } from "@volleysheet/db";
+import { asc, eq, schema, sql } from "@volleysheet/db";
 
-const orderMap = new Map([
+import { createTRPCRouter, publicProcedure } from "../trpc";
+
+const selectScoreMap = new Map([
   ["ALL", 0],
   ["E", 5],
   ["D", 10],
@@ -15,9 +16,14 @@ const orderMap = new Map([
 
 export const playersRouter = createTRPCRouter({
   getAll: publicProcedure
-    .input(z.enum(["E", "D", "C", "B", "A", "S", "ALL"]).default("ALL"))
+    .input(
+      z.object({
+        rank: z.enum(["E", "D", "C", "B", "A", "S", "ALL"]).default("ALL"),
+        order: z.enum(["name", "jersey"]).default("name"),
+      }),
+    )
     .query(async ({ ctx, input }) => {
-      const orderByScore = orderMap.get(input);
+      const selectScore = selectScoreMap.get(input.rank);
 
       return await ctx.db
         .select({
@@ -30,11 +36,14 @@ export const playersRouter = createTRPCRouter({
         .innerJoin(schema.stats, eq(schema.stats.playerId, schema.players.id))
         .where(
           ({ score }) =>
-            sql`${score} >= ${orderByScore} and ${score} <= ${
-              orderByScore ? orderByScore + 4 : 30
+            sql`${score} >= ${selectScore} and ${score} <= ${
+              selectScore ? selectScore + 4 : 30
             }`,
         )
-        .orderBy(schema.players.name);
+        .orderBy(() => {
+          if (input.order === "jersey") return asc(schema.players.jerseyNumber);
+          return asc(schema.players.name);
+        });
     }),
   getById: publicProcedure
     .input(z.object({ playerId: z.string().uuid() }))
