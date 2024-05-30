@@ -12,11 +12,15 @@ import { classnames } from "@/utils/classnames";
 type ScoreMode = "ATTACK" | "SERVE" | "BLOCK";
 
 export default function Score() {
-  const [order, setOrder] = useState<PlayerOrderBy>("name");
   const [hasPinnedBall, setHasPinnedBall] = useState(false);
+  const [ballPosition, setBallPosition] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
   const [selectedMode, setSelectedMode] = useState<ScoreMode | undefined>(
     undefined,
   );
+  const [order, setOrder] = useState<PlayerOrderBy>("name");
 
   const { data, isLoading } = api.players.getAll.useQuery({
     rank: "ALL",
@@ -57,6 +61,7 @@ export default function Score() {
 
     scorePoint.mutate(
       {
+        position: ballPosition,
         playerId,
         type: selectedMode,
       },
@@ -81,7 +86,7 @@ export default function Score() {
                 <button
                   key={mode}
                   className={classnames({
-                    "cursor-pointer rounded px-6 py-8 text-sm font-medium transition":
+                    "cursor-pointer rounded px-6 py-8 text-sm font-bold transition lg:font-medium":
                       true,
                     "bg-zinc-950 text-white": mode !== selectedMode,
                     "bg-white text-zinc-950": mode === selectedMode,
@@ -101,6 +106,7 @@ export default function Score() {
                     <CourtCanvas
                       hasPinnedBall={hasPinnedBall}
                       setHasPinnedBall={setHasPinnedBall}
+                      setBallPosition={setBallPosition}
                     />
                   </div>
                   <div className="w-full">
@@ -115,10 +121,17 @@ export default function Score() {
                         <PlayerOrderList order={order} setOrder={setOrder} />
                       </div>
                     </div>
-                    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
+                    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
                       {data?.map((player) => (
-                        <button onClick={() => handlePoint(player.id)}>
-                          <PlayerCard key={player.id} {...player} />
+                        <button
+                          key={player.id}
+                          onClick={() => handlePoint(player.id)}
+                          className={classnames({
+                            "cursor-pointer": hasPinnedBall,
+                            "cursor-not-allowed": !hasPinnedBall,
+                          })}
+                        >
+                          <PlayerCard {...player} />
                         </button>
                       ))}
                     </div>

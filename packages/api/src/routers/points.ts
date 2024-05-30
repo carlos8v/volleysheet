@@ -8,12 +8,18 @@ export const pointsRouter = createTRPCRouter({
   score: publicProcedure
     .input(
       z.object({
+        position: z.object({
+          x: z.number(),
+          y: z.number(),
+        }),
         playerId: z.string().uuid(),
         type: z.enum(["ATTACK", "SERVE", "BLOCK"]),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.insert(schema.points).values({
+        positionX: input.position.x,
+        positionY: input.position.y,
         playerId: input.playerId,
         type: input.type,
       });
