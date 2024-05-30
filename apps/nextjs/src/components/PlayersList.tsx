@@ -76,7 +76,6 @@ export const PlayersList = ({ rank }: { rank: AvaliableRanks }) => {
     field: "position",
     order: ["SETTER", "WING_SPIKER", "MIDDLE_BLOCKER", "OPPOSITE", "LIBERO"],
   });
-  console.log(groupedData);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
