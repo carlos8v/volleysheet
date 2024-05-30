@@ -1,16 +1,18 @@
 import { useState } from "react";
-import { CourtCanvas } from "@/components/CourtCanvas";
+
 import { Page } from "@/components/Page";
-import { PlayerCardButton } from "@/components/PlayerCardButton";
+import { PlayerCard } from "@/components/PlayerCard";
+import { CourtCanvas } from "@/components/CourtCanvas";
+import { PlayerOrderBy, PlayerOrderList } from "@/components/PlayerOrderList";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
+
 import { api } from "@/utils/api";
 import { classnames } from "@/utils/classnames";
-import { ArrowDownUp } from "lucide-react";
 
 type ScoreMode = "ATTACK" | "SERVE" | "BLOCK";
 
 export default function Score() {
-  const [order, setOrder] = useState<"name" | "jersey">("name");
+  const [order, setOrder] = useState<PlayerOrderBy>("name");
   const [hasPinnedBall, setHasPinnedBall] = useState(false);
   const [selectedMode, setSelectedMode] = useState<ScoreMode | undefined>(
     undefined,
@@ -110,36 +112,14 @@ export default function Score() {
                     <div className="mb-4 flex justify-between">
                       <p className="font-medium">Selecione jogador</p>
                       <div className="flex items-center gap-2">
-                        <ArrowDownUp className="h-4 w-4 text-zinc-400" />
-                        <button
-                          className={classnames({
-                            "text-sm transition": true,
-                            "text-zinc-400": order !== "name",
-                            "text-zinc-200": order === "name",
-                          })}
-                          onClick={() => setOrder("name")}
-                        >
-                          Nome
-                        </button>
-                        <button
-                          className={classnames({
-                            "text-sm transition": true,
-                            "text-zinc-400": order !== "jersey",
-                            "text-zinc-200": order === "jersey",
-                          })}
-                          onClick={() => setOrder("jersey")}
-                        >
-                          Número
-                        </button>
+                        <PlayerOrderList order={order} setOrder={setOrder} />
                       </div>
                     </div>
                     <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
                       {data?.map((player) => (
-                        <PlayerCardButton
-                          key={player.id}
-                          player={player}
-                          handleClick={handlePoint}
-                        />
+                        <button onClick={() => handlePoint(player.id)}>
+                          <PlayerCard key={player.id} {...player} />
+                        </button>
                       ))}
                     </div>
                   </div>
