@@ -1,13 +1,11 @@
+import { useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
-
-import { api } from "@/utils/api";
-import { formatName } from "@/utils/formatName";
-import { classnames } from "@/utils/classnames";
-
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { api } from "@/utils/api";
+import { classnames } from "@/utils/classnames";
+import { formatName } from "@/utils/formatName";
 
 export type AvaliableRanks = "ALL" | "S" | "A" | "B" | "C" | "D" | "E";
 const avaliableRanks: { label: string; value: AvaliableRanks }[] = [
@@ -46,7 +44,7 @@ export const PlayersList = ({ rank }: { rank: AvaliableRanks }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const { data, isLoading } = api.players.getAll.useQuery(rank);
+  const { data, isLoading } = api.players.getAll.useQuery({ rank });
 
   const createQueryString = useCallback(
     (name: string, value: string) => {

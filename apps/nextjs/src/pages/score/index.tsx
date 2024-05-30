@@ -1,20 +1,26 @@
 import { useState } from "react";
+import { CourtCanvas } from "@/components/CourtCanvas";
 import { Page } from "@/components/Page";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { PlayerCardButton } from "@/components/PlayerCardButton";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import { api } from "@/utils/api";
 import { classnames } from "@/utils/classnames";
-import { formatName } from "@/utils/formatName";
+import { ArrowDownUp } from "lucide-react";
 
 type ScoreMode = "ATTACK" | "SERVE" | "BLOCK";
 
 export default function Score() {
-  const { data, isLoading } = api.players.getAll.useQuery("ALL");
-  const scorePoint = api.points.score.useMutation();
-
+  const [order, setOrder] = useState<"name" | "jersey">("name");
+  const [hasPinnedBall, setHasPinnedBall] = useState(false);
   const [selectedMode, setSelectedMode] = useState<ScoreMode | undefined>(
     undefined,
   );
+
+  const { data, isLoading } = api.players.getAll.useQuery({
+    rank: "ALL",
+    order,
+  });
+  const scorePoint = api.points.score.useMutation();
 
   const buttons: {
     title: string;
@@ -37,6 +43,7 @@ export default function Score() {
   function handleSelectMode(mode: ScoreMode) {
     if (selectedMode === mode) {
       setSelectedMode(undefined);
+      setHasPinnedBall(false);
       return;
     }
 
@@ -44,7 +51,7 @@ export default function Score() {
   }
 
   function handlePoint(playerId: string) {
-    if (!selectedMode) return;
+    if (!selectedMode || !hasPinnedBall) return;
 
     scorePoint.mutate(
       {
@@ -53,6 +60,7 @@ export default function Score() {
       },
       {
         onSettled: () => {
+          setHasPinnedBall(false);
           setSelectedMode(undefined);
         },
       },
@@ -65,7 +73,7 @@ export default function Score() {
       <Page.Portal>
         <Page.Main>
           <Page.Content className="h-fit rounded bg-zinc-900 p-4">
-            <p className="font-medium">Placar</p>
+            <p className="font-medium">Marcar</p>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {buttons.map(({ title, mode }) => (
                 <button
@@ -85,30 +93,56 @@ export default function Score() {
             <Collapsible open={Boolean(selectedMode)}>
               <CollapsibleContent>
                 <hr className="my-8" />
-                <p className="mb-4 font-medium">Selecione jogador</p>
-                {isLoading ? (
-                  <p className="my-4 animate-pulse text-center font-medium text-zinc-400">
-                    Carregando
-                  </p>
-                ) : null}
-                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                  {data?.map(({ id, name, jerseyNumber }) => (
-                    <button
-                      key={id}
-                      className="group flex h-full cursor-pointer flex-col items-center justify-start rounded bg-zinc-950 p-4 transition hover:bg-white"
-                      onClick={() => handlePoint(id)}
-                    >
-                      <Avatar className="relative mb-4 h-16 w-16 overflow-visible">
-                        <AvatarFallback>{formatName(name)}</AvatarFallback>
-                        <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-zinc-600 text-sm transition group-hover:bg-zinc-700">
-                          {jerseyNumber}
-                        </div>
-                      </Avatar>
-                      <p className="h-full text-center text-sm font-medium transition group-hover:text-zinc-950">
-                        {name}
+                <div className="flex w-full flex-col gap-8 lg:flex-row">
+                  <div className="w-full max-w-sm">
+                    <p className="mb-4 font-medium">Posição na quadra</p>
+                    <CourtCanvas
+                      hasPinnedBall={hasPinnedBall}
+                      setHasPinnedBall={setHasPinnedBall}
+                    />
+                  </div>
+                  <div className="w-full">
+                    {isLoading ? (
+                      <p className="my-4 animate-pulse text-center font-medium text-zinc-400">
+                        Carregando
                       </p>
-                    </button>
-                  ))}
+                    ) : null}
+                    <div className="mb-4 flex justify-between">
+                      <p className="font-medium">Selecione jogador</p>
+                      <nav className="flex items-center gap-2">
+                        <ArrowDownUp className="h-4 w-4 text-zinc-400" />
+                        <button
+                          className={classnames({
+                            "text-sm transition": true,
+                            "text-zinc-400": order !== "name",
+                            "text-zinc-200": order === "name",
+                          })}
+                          onClick={() => setOrder("name")}
+                        >
+                          Nome
+                        </button>
+                        <button
+                          className={classnames({
+                            "text-sm transition": true,
+                            "text-zinc-400": order !== "jersey",
+                            "text-zinc-200": order === "jersey",
+                          })}
+                          onClick={() => setOrder("jersey")}
+                        >
+                          Número
+                        </button>
+                      </nav>
+                    </div>
+                    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4">
+                      {data?.map((player) => (
+                        <PlayerCardButton
+                          key={player.id}
+                          player={player}
+                          handleClick={handlePoint}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </CollapsibleContent>
             </Collapsible>
