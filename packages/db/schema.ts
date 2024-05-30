@@ -4,6 +4,7 @@
 import { randomUUID } from "crypto";
 import { relations, sql } from "drizzle-orm";
 import {
+  double,
   index,
   int,
   mysqlEnum,
@@ -87,6 +88,14 @@ export const points = mysqlTable(
     id: varchar("id", { length: 256 })
       .$defaultFn(() => randomUUID())
       .notNull(),
+    positionX: double("positionX", {
+      precision: 5,
+      scale: 2,
+    }),
+    positionY: double("positionY", {
+      precision: 5,
+      scale: 2,
+    }),
     playerId: varchar("playerId", { length: 256 }).notNull(),
     type: mysqlEnum("type", ["ATTACK", "SERVE", "BLOCK"]).notNull(),
     createdAt: timestamp("createdAt")
