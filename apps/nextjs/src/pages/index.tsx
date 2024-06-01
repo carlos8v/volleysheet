@@ -6,14 +6,11 @@ import {
 } from "next";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
 import { Page } from "@/components/Page";
 import { PlayerCard } from "@/components/PlayerCard";
+import { PlayerOrderBy, PlayerOrderList } from "@/components/PlayerOrderList";
 import { AvaliableRank, RankTabs } from "@/components/RankTabs";
 import { ViewList, ViewOptions } from "@/components/ViewList";
-import { PlayerOrderList, PlayerOrderBy } from "@/components/PlayerOrderList";
-
-import { useGroupBy } from "@/hooks/useGroupBy";
 import { api } from "@/utils/api";
 import { positionsMap } from "@/utils/positions";
 
@@ -39,16 +36,44 @@ export default function Home({
   const [view, setView] = useState<ViewOptions>("list");
   const [order, setOrder] = useState<PlayerOrderBy>("name");
 
-  const { data, isLoading } = api.players.getAll.useQuery({ rank, order });
-  const groupedData = useGroupBy({
-    data: data ?? [],
-    field: "position",
-    order: ["SETTER", "WING_SPIKER", "MIDDLE_BLOCKER", "OPPOSITE", "LIBERO"],
-  });
+  const allPlayers = api.players.getAll.useQuery(
+    { rank, order },
+    {
+      enabled: view === "list",
+      queryKey: [
+        "players.getAll",
+        {
+          order,
+        },
+      ],
+    },
+  );
+  const allPlayersByPosition = api.players.getAllByPosition.useQuery(
+    {
+      rank,
+      order,
+    },
+    {
+      enabled: view === "grid",
+      queryKey: [
+        "players.getAllByPosition",
+        {
+          order,
+        },
+      ],
+    },
+  );
+
+  const isLoading =
+    (view === "list" && allPlayers.isLoading) ||
+    (view === "grid" && allPlayersByPosition.isLoading);
+  const hasNoData =
+    (view === "list" && !allPlayers.data?.length) ||
+    (view === "grid" && !allPlayersByPosition.data?.length);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams);
+      const params = new URLSearchParams(searchParams ?? undefined);
 
       params.set(name, value);
       return `?${params.toString()}`;
@@ -80,7 +105,7 @@ export default function Home({
             </div>
             {view === "list" ? (
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                {data?.map((player) => (
+                {allPlayers.data?.map((player) => (
                   <Link href={`/player/${player.id}`} key={player.id}>
                     <PlayerCard {...player} />
                   </Link>
@@ -88,7 +113,7 @@ export default function Home({
               </div>
             ) : (
               <div className="mt-4 flex flex-col gap-4">
-                {groupedData.map(({ name, data: rows }) => (
+                {allPlayersByPosition.data?.map(({ name, rows }) => (
                   <div key={name}>
                     <p className="text-sm font-medium text-zinc-400">
                       {positionsMap.get(name as string)}
@@ -110,7 +135,8 @@ export default function Home({
                 Carregando
               </p>
             ) : null}
-            {!data?.length && !isLoading ? (
+
+            {hasNoData && !isLoading ? (
               <p className="my-4 text-center font-medium text-zinc-400">
                 Sem jogadores nesse rank
               </p>
