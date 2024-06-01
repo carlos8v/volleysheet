@@ -1,17 +1,19 @@
 import { useState } from "react";
-
+import { CourtCanvas } from "@/components/CourtCanvas";
 import { Page } from "@/components/Page";
 import { PlayerCard } from "@/components/PlayerCard";
-import { CourtCanvas } from "@/components/CourtCanvas";
 import { PlayerOrderBy, PlayerOrderList } from "@/components/PlayerOrderList";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
-
+import useDebounce from "@/hooks/useDebounce";
 import { api } from "@/utils/api";
 import { classnames } from "@/utils/classnames";
 
 type ScoreMode = "ATTACK" | "SERVE" | "BLOCK";
 
 export default function Score() {
+  const [query, setQuery] = useState("");
+  const debounceQuery = useDebounce(query, 500);
+
   const [hasPinnedBall, setHasPinnedBall] = useState(false);
   const [ballPosition, setBallPosition] = useState<{ x: number; y: number }>({
     x: 0,
@@ -22,10 +24,23 @@ export default function Score() {
   );
   const [order, setOrder] = useState<PlayerOrderBy>("name");
 
-  const { data, isLoading } = api.players.getAll.useQuery({
-    rank: "ALL",
-    order,
-  });
+  const { data, isLoading } = api.players.getAll.useQuery(
+    {
+      name: debounceQuery,
+      rank: "ALL",
+      order,
+    },
+    {
+      keepPreviousData: true,
+      queryKey: [
+        "players.getAll",
+        {
+          order,
+          name: debounceQuery,
+        },
+      ],
+    },
+  );
   const scorePoint = api.points.score.useMutation();
 
   const buttons: {
@@ -121,6 +136,15 @@ export default function Score() {
                         <PlayerOrderList order={order} setOrder={setOrder} />
                       </div>
                     </div>
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Nome do jogador"
+                        className="w-full rounded border border-zinc-800 bg-zinc-950 p-2 placeholder:text-zinc-600 md:w-fit"
+                        value={query}
+                        onChange={({ target }) => setQuery(target.value)}
+                      />
+                    </div>
                     <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
                       {data?.map((player) => (
                         <button
@@ -134,6 +158,11 @@ export default function Score() {
                           <PlayerCard {...player} />
                         </button>
                       ))}
+                      {!data?.length ? (
+                        <p className="my-4 font-medium text-zinc-400">
+                          Jogador não encontrado
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                 </div>
