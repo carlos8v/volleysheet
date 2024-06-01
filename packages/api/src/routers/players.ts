@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { asc, eq, schema, sql } from "@volleysheet/db";
+import { and, asc, eq, gte, like, lte, schema } from "@volleysheet/db";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -18,6 +18,7 @@ export const playersRouter = createTRPCRouter({
   getAll: publicProcedure
     .input(
       z.object({
+        name: z.string().nullish(),
         rank: z.enum(["E", "D", "C", "B", "A", "S", "ALL"]).default("ALL"),
         order: z.enum(["name", "jersey"]).default("name"),
       }),
@@ -35,12 +36,9 @@ export const playersRouter = createTRPCRouter({
         })
         .from(schema.players)
         .innerJoin(schema.stats, eq(schema.stats.playerId, schema.players.id))
-        .where(
-          ({ score }) =>
-            sql`${score} >= ${selectScore} and ${score} <= ${
-              selectScore ? selectScore + 4 : 30
-            }`,
-        )
+        .where(and(gte(schema.stats.score, selectScore ?? 0), lte(schema.stats.score, selectScore ? selectScore + 4 : 30), ...(input.name ? [
+          like(schema.players.name, `%${input.name}%`)
+        ]: [])))
         .orderBy(() => {
           if (input.order === "jersey") return asc(schema.players.jerseyNumber);
           return asc(schema.players.name);
