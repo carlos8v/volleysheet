@@ -11,5 +11,5 @@ if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL is not set");
 }
 
-const connection = await mysql.createConnection(process.env.DATABASE_URL);
-export const db = mysqlDrizzle(connection);
+const pool = mysql.createPool(process.env.DATABASE_URL);
+export const db = mysqlDrizzle(pool);
