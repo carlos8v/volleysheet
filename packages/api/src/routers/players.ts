@@ -36,9 +36,15 @@ export const playersRouter = createTRPCRouter({
         })
         .from(schema.players)
         .innerJoin(schema.stats, eq(schema.stats.playerId, schema.players.id))
-        .where(and(gte(schema.stats.score, selectScore ?? 0), lte(schema.stats.score, selectScore ? selectScore + 4 : 30), ...(input.name ? [
-          like(schema.players.name, `%${input.name}%`)
-        ]: [])))
+        .where(
+          and(
+            gte(schema.stats.score, selectScore ?? 0),
+            lte(schema.stats.score, selectScore ? selectScore + 4 : 30),
+            ...(input.name
+              ? [like(schema.players.name, `%${input.name}%`)]
+              : []),
+          ),
+        )
         .orderBy(() => {
           if (input.order === "jersey") return asc(schema.players.jerseyNumber);
           return asc(schema.players.name);
