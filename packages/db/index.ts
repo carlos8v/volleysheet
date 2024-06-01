@@ -1,10 +1,6 @@
 import { drizzle as mysqlDrizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2/promise";
 
-import { mysqlTable, players, points, stats, statsRelations } from "./schema";
-
-export const schema = { mysqlTable, players, stats, statsRelations, points };
-
 export * from "drizzle-orm";
 
 if (!process.env.DATABASE_URL) {

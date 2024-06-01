@@ -2,7 +2,7 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
 import { randomUUID } from "crypto";
-import { relations, sql } from "drizzle-orm";
+import { InferSelectModel, relations, sql } from "drizzle-orm";
 import {
   double,
   index,
@@ -44,7 +44,9 @@ export const players = mysqlTable(
       "SETTER",
       "WING_SPIKER",
       "MIDDLE_BLOCKER",
-    ]),
+    ])
+      .notNull()
+      .default("UNKNOWN"),
     createdAt: timestamp("createdAt")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -56,17 +58,19 @@ export const players = mysqlTable(
   }),
 );
 
+export type Player = InferSelectModel<typeof players>;
+
 export const stats = mysqlTable(
   "stats",
   {
     playerId: varchar("playerId", { length: 256 }).notNull(),
-    stamina: int("stamina"),
-    attack: int("attack"),
-    defence: int("defence"),
-    block: int("block"),
-    set: int("set"),
-    serve: int("serve"),
-    score: int("score"),
+    stamina: int("stamina").notNull().default(0),
+    attack: int("attack").notNull().default(0),
+    defence: int("defence").notNull().default(0),
+    block: int("block").notNull().default(0),
+    set: int("set").notNull().default(0),
+    serve: int("serve").notNull().default(0),
+    score: int("score").notNull().default(0),
   },
   (stat) => ({
     playerIdIdx: index("player_id_idx").on(stat.playerId),
@@ -74,6 +78,8 @@ export const stats = mysqlTable(
     score: index("score_idx").on(stat.score),
   }),
 );
+
+export type State = InferSelectModel<typeof stats>;
 
 export const statsRelations = relations(stats, ({ one }) => ({
   player: one(players, {
@@ -108,3 +114,5 @@ export const points = mysqlTable(
     playerIdIdx: index("player_id_idx").on(points.playerId),
   }),
 );
+
+export type Point = InferSelectModel<typeof points>;
