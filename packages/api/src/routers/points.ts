@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-import { count, schema, sql } from "@volleysheet/db";
+import { count, sql } from "@volleysheet/db";
+import * as schema from "@volleysheet/db/schema";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 

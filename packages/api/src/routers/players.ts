@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-import { and, asc, eq, gte, like, lte, schema } from "@volleysheet/db";
+import { and, asc, eq, gte, like, lte } from "@volleysheet/db";
+import * as schema from "@volleysheet/db/schema";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -38,8 +39,12 @@ export const playersRouter = createTRPCRouter({
         .innerJoin(schema.stats, eq(schema.stats.playerId, schema.players.id))
         .where(
           and(
-            gte(schema.stats.score, selectScore ?? 0),
-            lte(schema.stats.score, selectScore ? selectScore + 4 : 30),
+            ...(input.rank !== "ALL"
+              ? [
+                  lte(schema.stats.score, selectScore ? selectScore + 4 : 30),
+                  gte(schema.stats.score, selectScore ?? 0),
+                ]
+              : []),
             ...(input.name
               ? [like(schema.players.name, `%${input.name}%`)]
               : []),
@@ -49,6 +54,67 @@ export const playersRouter = createTRPCRouter({
           if (input.order === "jersey") return asc(schema.players.jerseyNumber);
           return asc(schema.players.name);
         });
+    }),
+  getAllByPosition: publicProcedure
+    .input(
+      z.object({
+        name: z.string().nullish(),
+        rank: z.enum(["E", "D", "C", "B", "A", "S", "ALL"]).default("ALL"),
+        order: z.enum(["name", "jersey"]).default("name"),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const selectScore = selectScoreMap.get(input.rank);
+
+      const positions = [
+        "SETTER",
+        "WING_SPIKER",
+        "MIDDLE_BLOCKER",
+        "OPPOSITE",
+        "LIBERO",
+      ] as schema.Player["position"][];
+
+      const players = [];
+      for (const position of positions) {
+        const playersByPosition = await ctx.db
+          .select({
+            id: schema.players.id,
+            name: schema.players.name,
+            score: schema.stats.score,
+            position: schema.players.position,
+            jerseyNumber: schema.players.jerseyNumber,
+          })
+          .from(schema.players)
+          .innerJoin(schema.stats, eq(schema.stats.playerId, schema.players.id))
+          .where(
+            and(
+              eq(schema.players.position, position),
+              ...(input.rank !== "ALL"
+                ? [
+                    lte(schema.stats.score, selectScore ? selectScore + 4 : 30),
+                    gte(schema.stats.score, selectScore ?? 0),
+                  ]
+                : []),
+              ...(input.name
+                ? [like(schema.players.name, `%${input.name}%`)]
+                : []),
+            ),
+          )
+          .orderBy(() => {
+            if (input.order === "jersey")
+              return asc(schema.players.jerseyNumber);
+            return asc(schema.players.name);
+          });
+
+        if (playersByPosition.length) {
+          players.push({
+            name: position,
+            rows: playersByPosition,
+          });
+        }
+      }
+
+      return players;
     }),
   getById: publicProcedure
     .input(z.object({ playerId: z.string().uuid() }))
