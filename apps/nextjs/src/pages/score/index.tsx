@@ -74,19 +74,15 @@ export default function Score() {
   function handlePoint(playerId: string) {
     if (!selectedMode || !hasPinnedBall) return;
 
-    scorePoint.mutate(
-      {
-        position: ballPosition,
-        playerId,
-        type: selectedMode,
-      },
-      {
-        onSettled: () => {
-          setHasPinnedBall(false);
-          setSelectedMode(undefined);
-        },
-      },
-    );
+    // Optimistic mutation
+    scorePoint.mutate({
+      position: ballPosition,
+      playerId,
+      type: selectedMode,
+    });
+
+    setHasPinnedBall(false);
+    setSelectedMode(undefined);
   }
 
   return (
