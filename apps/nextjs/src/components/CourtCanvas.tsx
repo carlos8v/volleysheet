@@ -107,26 +107,28 @@ export const CourtCanvas = ({
             stroke="currentColor"
             strokeWidth="0.5"
             x1="4"
-            y1="56"
+            y1="78"
             x2="116"
-            y2="56"
+            y2="78"
           />
-          <line
-            stroke="currentColor"
-            strokeWidth="0.5"
-            x1="4"
-            y1="18"
-            x2="116"
-            y2="18"
-          />
-          <text
-            x="60"
-            y="14"
-            fill="currentColor"
-            className="-translate-x-[8px] select-none text-[8px]"
-          >
-            REDE
-          </text>
+          <g>
+            <line
+              stroke="currentColor"
+              strokeWidth="0.5"
+              x1="4"
+              y1="115"
+              x2="116"
+              y2="115"
+            />
+            <text
+              x="60"
+              y="125"
+              fill="currentColor"
+              className="-translate-x-[8px] select-none text-[8px]"
+            >
+              REDE
+            </text>
+          </g>
         </g>
       </svg>
     </div>
