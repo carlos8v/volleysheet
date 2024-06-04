@@ -97,11 +97,11 @@ export const points = mysqlTable(
     positionX: double("positionX", {
       precision: 5,
       scale: 2,
-    }),
+    }).notNull(),
     positionY: double("positionY", {
       precision: 5,
       scale: 2,
-    }),
+    }).notNull(),
     playerId: varchar("playerId", { length: 256 }).notNull(),
     type: mysqlEnum("type", ["ATTACK", "SERVE", "BLOCK"]).notNull(),
     createdAt: timestamp("createdAt")
