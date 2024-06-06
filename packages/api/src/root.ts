@@ -1,3 +1,4 @@
+import { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import { playersRouter } from "./routers/players";
 import { pointsRouter } from "./routers/points";
 import { createTRPCRouter } from "./trpc";
@@ -14,3 +15,6 @@ export const appRouter = createTRPCRouter({
 
 // export type definition of API
 export type AppRouter = typeof appRouter;
+
+export type RouterInputs = inferRouterInputs<AppRouter>;
+export type RouterOutputs = inferRouterOutputs<AppRouter>;
