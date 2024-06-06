@@ -11,6 +11,7 @@ import { PlayerCard } from "@/components/PlayerCard";
 import { PlayerOrderBy, PlayerOrderList } from "@/components/PlayerOrderList";
 import { AvaliableRank, RankTabs } from "@/components/RankTabs";
 import { ViewList, ViewOptions } from "@/components/ViewList";
+import useDebounce from "@/hooks/useDebounce";
 import { api } from "@/utils/api";
 import { positionsMap } from "@/utils/positions";
 
@@ -33,17 +34,22 @@ export default function Home({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const [query, setQuery] = useState("");
+  const debounceQuery = useDebounce(query, 500);
+
   const [view, setView] = useState<ViewOptions>("list");
   const [order, setOrder] = useState<PlayerOrderBy>("name");
 
   const allPlayers = api.players.getAll.useQuery(
-    { rank, order },
+    { rank, order, name: debounceQuery },
     {
       enabled: view === "list",
+      keepPreviousData: true,
       queryKey: [
         "players.getAll",
         {
           order,
+          name: debounceQuery,
         },
       ],
     },
@@ -55,6 +61,7 @@ export default function Home({
     },
     {
       enabled: view === "grid",
+      keepPreviousData: true,
       queryKey: [
         "players.getAllByPosition",
         {
@@ -88,7 +95,7 @@ export default function Home({
         <Page.Main>
           <Page.Content className="h-fit rounded bg-zinc-900 p-4">
             <p className="font-medium">Jogadores</p>
-            <div className="flex w-full flex-col lg:mb-0 lg:flex-row lg:justify-between">
+            <div>
               <RankTabs
                 rank={rank}
                 handleClick={(newRank) =>
@@ -97,14 +104,26 @@ export default function Home({
                   )
                 }
               />
-              <div className="flex items-center gap-2 self-end lg:self-auto">
+            </div>
+            <hr className="mb-2 bg-zinc-600" />
+            <div className="mt-2 flex w-full flex-col gap-4 sm:mb-0 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <input
+                  type="text"
+                  placeholder="Nome do jogador"
+                  className="w-full rounded border border-zinc-800 bg-zinc-950 p-2 placeholder:text-zinc-600 md:w-fit"
+                  value={query}
+                  onChange={({ target }) => setQuery(target.value)}
+                />
+              </div>
+              <div className="flex items-center gap-2 self-end sm:self-auto">
                 <PlayerOrderList order={order} setOrder={setOrder} />
                 <span className="mx-2 h-4 w-px bg-zinc-600" />
                 <ViewList view={view} setView={setView} />
               </div>
             </div>
             {view === "list" ? (
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {allPlayers.data?.map((player) => (
                   <Link href={`/player/${player.id}`} key={player.id}>
                     <PlayerCard {...player} />
@@ -118,7 +137,7 @@ export default function Home({
                     <p className="text-sm font-medium text-zinc-400">
                       {positionsMap.get(name as string)}
                     </p>
-                    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                    <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                       {rows?.map((player) => (
                         <Link href={`/player/${player.id}`} key={player.id}>
                           <PlayerCard {...player} />
