@@ -90,7 +90,7 @@ export default function Score() {
       <Page.Title />
       <Page.Portal>
         <Page.Main>
-          <Page.Content className="h-fit rounded bg-zinc-900 p-4">
+          <Page.Content className="h-fit flex-col rounded bg-zinc-900 p-4">
             <p className="font-medium">Marcar</p>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {buttons.map(({ title, mode }) => (

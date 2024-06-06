@@ -4,12 +4,10 @@ import type {
   InferGetServerSidePropsType,
 } from "next";
 import { Page } from "@/components/Page";
+import { PlayerDetails } from "@/components/PlayerDetailts";
 import { PlayerStats } from "@/components/PlayerStats";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { api } from "@/utils/api";
-import { formatName } from "@/utils/formatName";
 import z from "zod";
-import { positionsMap } from '@/utils/positions';
 
 export const getServerSideProps: GetServerSideProps<{
   playerId: string;
@@ -31,13 +29,6 @@ export const getServerSideProps: GetServerSideProps<{
   };
 };
 
-const handednessMap = new Map([
-  [null, "N/A"],
-  ["UNKNOWN", "N/A"],
-  ["LEFT", "Canhoto"],
-  ["RIGHT", "Destro"],
-]);
-
 export default function PlayerPage({
   playerId,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -45,7 +36,7 @@ export default function PlayerPage({
     playerId,
   });
 
-  const points = api.points.getByPlayerId.useQuery(playerId);
+  const highscore = api.points.getPlayerHighscore.useQuery(playerId);
 
   if (isLoading) {
     return null;
@@ -60,100 +51,52 @@ export default function PlayerPage({
       <Page.Title />
       <Page.Portal>
         <Page.Main>
-          <Page.Content className="h-fit rounded bg-zinc-900 lg:max-w-4xl">
-            <div className="flex h-full flex-col md:flex-row">
-              <section className="mb-4 w-full border-b border-zinc-800 pb-4 md:mb-0 md:border-b-0 md:border-r md:pb-0">
-                <div className="mb-4 flex w-full flex-col items-center justify-center pt-4">
-                  <Avatar className="mb-2 h-32 w-32">
-                    <AvatarImage
-                      src={data?.photoUrl ?? ""}
-                      alt={data?.name ?? ""}
-                    />
-                    <AvatarFallback className="bg-zinc-800">
-                      {formatName(data?.name ?? "Desconhecido")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <strong className="text-lg">{data?.name}</strong>
-                </div>
-                <div className="grid grid-cols-2 gap-4 py-4 md:grid-cols-3">
-                  <div className="flex flex-col items-center justify-center">
-                    <p className="text-xs uppercase text-zinc-400">
-                      Nacionalidade
-                    </p>
-                    <p className="flex items-center font-medium">
-                      <img
-                        className="mr-0.5"
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Flag_of_Brazil.svg/22px-Flag_of_Brazil.svg.png"
-                      />
-                      {data?.country ?? "N/A"}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-center justify-center">
-                    <p className="text-xs uppercase text-zinc-400">Idade</p>
-                    <p className="font-medium">
-                      {data?.age ? `${data.age} anos` : "N/A"}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-center justify-center">
-                    <p className="text-xs uppercase text-zinc-400">Altura</p>
-                    <p className="font-medium">
-                      {data?.height ? `${data.height}cm` : "N/A"}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-center justify-center">
-                    <p className="text-xs uppercase text-zinc-400">Mão</p>
-                    <p className="font-medium">
-                      {data?.handedness
-                        ? `${handednessMap.get(data.handedness)}`
-                        : "N/A"}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-center justify-center">
-                    <p className="text-xs uppercase text-zinc-400">Posição</p>
-                    <p className="font-medium">
-                      {data?.position ? positionsMap.get(data.position) : "N/A"}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-center justify-center">
-                    <p className="text-xs uppercase text-zinc-400">
-                      Nº da camisa
-                    </p>
-                    <p className="font-medium">
-                      {data?.jerseyNumber ? data.jerseyNumber : "N/A"}
-                    </p>
-                  </div>
-                </div>
-              </section>
-              <PlayerStats
-                attack={data?.stats?.attack ?? 0}
-                block={data?.stats?.block ?? 0}
-                defence={data?.stats?.defence ?? 0}
-                serve={data?.stats?.serve ?? 0}
-                set={data?.stats?.set ?? 0}
-                stamina={data?.stats?.stamina ?? 0}
-                score={data?.stats?.score ?? 0}
-              />
-            </div>
-          </Page.Content>
-          <Page.Sidebar className="max-w-4xl rounded bg-zinc-900 px-4 pb-8 pt-3">
-            <p className="font-medium">Pontuações</p>
-            <hr className="my-2" />
+          <div className="grid h-fit w-full grid-cols-1 grid-rows-4 gap-6 md:grid-rows-3 lg:grid-cols-6 lg:grid-rows-3">
+            <section className="row-start-1 row-end-4 md:row-start-1 md:row-end-3 lg:col-start-1 lg:col-end-5 lg:row-start-1 lg:row-end-3">
+              <div className="flex flex-col rounded bg-zinc-900 md:flex-row">
+                <PlayerDetails
+                  name={data?.name}
+                  photoUrl={data?.photoUrl}
+                  country={data?.country}
+                  age={data?.age}
+                  handedness={data?.handedness}
+                  height={data?.height}
+                  position={data?.position}
+                  jerseyNumber={data?.jerseyNumber}
+                />
+                <PlayerStats
+                  attack={data?.stats?.attack ?? 0}
+                  block={data?.stats?.block ?? 0}
+                  defence={data?.stats?.defence ?? 0}
+                  serve={data?.stats?.serve ?? 0}
+                  set={data?.stats?.set ?? 0}
+                  stamina={data?.stats?.stamina ?? 0}
+                  score={data?.stats?.score ?? 0}
+                />
+              </div>
+            </section>
+            <section className="row-start-4 row-end-5 md:row-span-3 lg:col-start-5 lg:col-end-7 lg:row-start-1 lg:row-end-2">
+              <div className="flex h-fit flex-col gap-1 rounded bg-zinc-900 px-4 pb-8 pt-3">
+                <p className="font-medium">Pontuações</p>
+                <hr className="my-2" />
 
-            <fieldset className="flex justify-between">
-              <p className="text-sm text-zinc-400">Ataques</p>
-              <p className="font-medium">{points.data?.attack ?? 0}</p>
-            </fieldset>
+                <fieldset className="flex justify-between">
+                  <p className="text-sm text-zinc-400">Ataques</p>
+                  <p className="font-medium">{highscore.data?.attack ?? 0}</p>
+                </fieldset>
 
-            <fieldset className="flex justify-between">
-              <p className="text-sm text-zinc-400">Saques</p>
-              <p className="font-medium">{points.data?.serve ?? 0}</p>
-            </fieldset>
+                <fieldset className="flex justify-between">
+                  <p className="text-sm text-zinc-400">Saques</p>
+                  <p className="font-medium">{highscore.data?.serve ?? 0}</p>
+                </fieldset>
 
-            <fieldset className="flex justify-between">
-              <p className="text-sm text-zinc-400">Bloqueios</p>
-              <p className="font-medium">{points.data?.block ?? 0}</p>
-            </fieldset>
-          </Page.Sidebar>
+                <fieldset className="flex justify-between">
+                  <p className="text-sm text-zinc-400">Bloqueios</p>
+                  <p className="font-medium">{highscore.data?.block ?? 0}</p>
+                </fieldset>
+              </div>
+            </section>
+          </div>
         </Page.Main>
       </Page.Portal>
     </Page>

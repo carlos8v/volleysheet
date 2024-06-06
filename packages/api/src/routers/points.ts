@@ -25,7 +25,7 @@ export const pointsRouter = createTRPCRouter({
         type: input.type,
       });
     }),
-  getByPlayerId: publicProcedure
+  getPlayerHighscore: publicProcedure
     .input(z.string().uuid())
     .query(async ({ ctx, input }) => {
       const points = await ctx.db

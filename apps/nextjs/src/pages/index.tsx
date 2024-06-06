@@ -93,7 +93,7 @@ export default function Home({
       <Page.Title />
       <Page.Portal>
         <Page.Main>
-          <Page.Content className="h-fit rounded bg-zinc-900 p-4">
+          <Page.Content className="h-fit flex-col rounded bg-zinc-900 p-4">
             <p className="font-medium">Jogadores</p>
             <div>
               <RankTabs

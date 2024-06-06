@@ -61,7 +61,7 @@ Page.Content = function Content({
   children,
 }: PropsWithChildren<{ className?: string }>) {
   return (
-    <div className={`flex flex-col lg:flex-1 ${className}`}>{children}</div>
+    <div className={`flex lg:flex-1 ${className}`}>{children}</div>
   );
 };
 
