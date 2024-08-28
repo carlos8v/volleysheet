@@ -52,6 +52,49 @@ export const pointsRouter = createTRPCRouter({
           ),
         );
     }),
+  getLastWeekendPoints: publicProcedure
+    .input(z.string().uuid())
+    .query(async ({ ctx, input }) => {
+      const today = new Date();
+
+      const lastSaturdays: Date[] = [];
+      const points = [];
+
+      let lastSaturday = new Date(today);
+      while (lastSaturday.getDay() !== 6) {
+        lastSaturday.setDate(lastSaturday.getDate() - 1);
+      }
+
+      for (let i = 0; i < 4; i += 1) {
+        const d = new Date(lastSaturday);
+        d.setDate(lastSaturday.getDate() - 7 * i);
+        lastSaturdays.push(d);
+      }
+
+      for (const d of lastSaturdays) {
+        const year = d.getFullYear();
+        const month = (d.getMonth() + 1).toString().padStart(2, "0");
+        const day = d.getDate().toString().padStart(2, "0");
+
+        const dateStr = `${year}-${month}-${day}`;
+
+        const [result] = await ctx.db
+          .select({
+            count: count(),
+          })
+          .from(schema.points)
+          .where(
+            and(
+              eq(schema.points.playerId, input),
+              sql`date(${schema.points.createdAt}) = date(${dateStr})`,
+            ),
+          );
+
+        points.push(result?.count ?? 0);
+      }
+
+      return points;
+    }),
   getPlayerHighscore: publicProcedure
     .input(z.string().uuid())
     .query(async ({ ctx, input }) => {

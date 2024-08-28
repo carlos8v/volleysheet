@@ -5,6 +5,7 @@ import type {
 } from "next";
 import { Page } from "@/components/Page";
 import { PlayerDetails } from "@/components/PlayerDetailts";
+import { PlayerScoreChart } from "@/components/PlayerScoreChart";
 import { api } from "@/utils/api";
 import z from "zod";
 
@@ -36,6 +37,7 @@ export default function PlayerPage({
   });
 
   const highscore = api.points.getPlayerHighscore.useQuery(playerId);
+  const lastWeekendsPoints = api.points.getLastWeekendPoints.useQuery(playerId);
 
   if (isLoading) {
     return null;
@@ -57,7 +59,7 @@ export default function PlayerPage({
               </div>
             </div>
             <div className="py-3 lg:w-2/6 lg:pb-3 lg:pl-3 lg:pt-0">
-              <div className="flex h-fit flex-col gap-1 rounded bg-zinc-900 px-4 pb-8 pt-3">
+              <div className="flex h-fit flex-col gap-1 rounded bg-zinc-900 px-4 py-3">
                 <p className="font-medium">Pontuações</p>
                 <hr className="my-2" />
                 <fieldset className="flex justify-between">
@@ -72,6 +74,10 @@ export default function PlayerPage({
                   <p className="text-sm text-zinc-400">Bloqueios</p>
                   <p className="font-medium">{highscore.data?.block ?? 0}</p>
                 </fieldset>
+                <hr className="my-2" />
+                <PlayerScoreChart
+                  points={lastWeekendsPoints?.data ?? [0, 0, 0, 0]}
+                />
               </div>
             </div>
           </div>

@@ -3,8 +3,6 @@ import { useEffect, useRef, useState } from "react";
 let width = 0;
 let height = 0;
 
-const mockedPoints = [0, 4, 0, 4, 8, 0, 10];
-
 const defaultYUnit = 10;
 
 const maxYUnitLabels = 5;
@@ -98,7 +96,7 @@ const drawCurve = (
   ctx.fill();
 };
 
-const draw = (canvas: HTMLCanvasElement, points = mockedPoints) => {
+const draw = (canvas: HTMLCanvasElement, points: number[]) => {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
@@ -125,7 +123,7 @@ const draw = (canvas: HTMLCanvasElement, points = mockedPoints) => {
   const maxUnit = highestYUnit + (rest ? 10 - rest : 0);
 
   const xUnitPadding =
-    (width - leftPadding - rightPadding) / (mockedPoints.length - 1);
+    (width - leftPadding - rightPadding) / (points.length - 1);
   const yUnitPadding = (height - topPadding - bottomPadding) / maxYUnitLabels;
   const yAxisUnitLabel = maxUnit / maxYUnitLabels;
 
@@ -137,16 +135,17 @@ const draw = (canvas: HTMLCanvasElement, points = mockedPoints) => {
       height - bottomPadding - i * yUnitPadding + textTopPadding,
     );
 
-    // if (i >= 1) {
-    //   ctx.strokeStyle = `${guideColor}88`;
-    //   ctx.beginPath();
-    //   ctx.moveTo(leftPadding, height - bottomPadding - i * yUnitPadding);
-    //   ctx.lineTo(
-    //     width - rightPadding,
-    //     height - bottomPadding - i * yUnitPadding,
-    //   );
-    //   ctx.stroke();
-    // }
+    // Draw guide lines
+    if (i >= 1) {
+      ctx.strokeStyle = `${guideColor}88`;
+      ctx.beginPath();
+      ctx.moveTo(leftPadding, height - bottomPadding - i * yUnitPadding);
+      ctx.lineTo(
+        width - rightPadding,
+        height - bottomPadding - i * yUnitPadding,
+      );
+      ctx.stroke();
+    }
   }
 
   ctx.strokeStyle = guideColor;
@@ -160,7 +159,7 @@ const draw = (canvas: HTMLCanvasElement, points = mockedPoints) => {
   }
 
   const xPointPadding = (height - topPadding - bottomPadding) / maxUnit;
-  const pointsPositions = mockedPoints.map((point, idx) => ({
+  const pointsPositions = points.map((point, idx) => ({
     x: idx * xUnitPadding,
     y: height - point * xPointPadding,
   }));
@@ -174,7 +173,11 @@ const draw = (canvas: HTMLCanvasElement, points = mockedPoints) => {
   }
 };
 
-export const PlayerScoreChart = () => {
+type PlayerScoreChartProps = {
+  points: number[];
+};
+
+export const PlayerScoreChart = ({ points }: PlayerScoreChartProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasWidth, setCanvasWidth] = useState(0);
   const [canvasHeight, setCanvasHeight] = useState(0);
@@ -199,9 +202,9 @@ export const PlayerScoreChart = () => {
 
   useEffect(() => {
     if (canvasRef.current) {
-      draw(canvasRef.current);
+      draw(canvasRef.current, points ?? [0, 0, 0, 0]);
     }
-  }, [canvasWidth, canvasHeight]);
+  }, [canvasWidth, canvasHeight, points]);
 
   function getCanvasDimensions() {
     if (canvasRef.current) {
