@@ -9,7 +9,7 @@ const maxYUnitLabels = 5;
 
 const textTopPadding = 4;
 const textBottomPadding = 10;
-const textRightPadding = 6;
+const textRightPadding = 12;
 const textLeftPadding = 10;
 
 const topPadding = 20;
@@ -96,7 +96,12 @@ const drawCurve = (
   ctx.fill();
 };
 
-const draw = (canvas: HTMLCanvasElement, points: number[]) => {
+const draw = (
+  canvas: HTMLCanvasElement,
+  data: { date: string; points: number }[],
+) => {
+  const points = data.map(({ points }) => points);
+
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
@@ -152,7 +157,7 @@ const draw = (canvas: HTMLCanvasElement, points: number[]) => {
 
   for (let i = 0; i < xUnitPadding; i++) {
     ctx.strokeText(
-      `W${i + 1}`,
+      data[i]?.date ?? "",
       leftPadding + xUnitPadding * i - textRightPadding,
       height - textBottomPadding,
     );
@@ -174,10 +179,10 @@ const draw = (canvas: HTMLCanvasElement, points: number[]) => {
 };
 
 type PlayerScoreChartProps = {
-  points: number[];
+  data: { date: string; points: number }[];
 };
 
-export const PlayerScoreChart = ({ points }: PlayerScoreChartProps) => {
+export const PlayerScoreChart = ({ data }: PlayerScoreChartProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasWidth, setCanvasWidth] = useState(0);
   const [canvasHeight, setCanvasHeight] = useState(0);
@@ -202,9 +207,9 @@ export const PlayerScoreChart = ({ points }: PlayerScoreChartProps) => {
 
   useEffect(() => {
     if (canvasRef.current) {
-      draw(canvasRef.current, points ?? [0, 0, 0, 0]);
+      draw(canvasRef.current, data);
     }
-  }, [canvasWidth, canvasHeight, points]);
+  }, [canvasWidth, canvasHeight, data]);
 
   function getCanvasDimensions() {
     if (canvasRef.current) {

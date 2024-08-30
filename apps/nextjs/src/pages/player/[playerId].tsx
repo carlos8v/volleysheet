@@ -75,9 +75,7 @@ export default function PlayerPage({
                   <p className="font-medium">{highscore.data?.block ?? 0}</p>
                 </fieldset>
                 <hr className="my-2" />
-                <PlayerScoreChart
-                  points={lastWeekendsPoints?.data ?? [0, 0, 0, 0]}
-                />
+                <PlayerScoreChart data={lastWeekendsPoints?.data ?? []} />
               </div>
             </div>
           </div>

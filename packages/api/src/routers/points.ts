@@ -90,7 +90,7 @@ export const pointsRouter = createTRPCRouter({
             ),
           );
 
-        points.push(result?.count ?? 0);
+        points.unshift({ date: `${day}/${month}`, points: result?.count ?? 0 });
       }
 
       return points;
