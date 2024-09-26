@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatName } from "@/utils/formatName";
 import { positionsMap } from "@/utils/positions";
@@ -38,9 +37,9 @@ export const PlayerDetails = ({ player }: PlayerDetailsProps) => {
           <div className="flex flex-col items-center justify-center">
             <p className="text-xs uppercase text-zinc-400">Nacionalidade</p>
             <p className="flex items-center font-medium">
-              <Image
+              <img
                 className="mr-0.5"
-                alt={`${player.name} profile photo`}
+                alt="Country flag"
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Flag_of_Brazil.svg/22px-Flag_of_Brazil.svg.png"
               />
               {player?.country ?? "N/A"}
