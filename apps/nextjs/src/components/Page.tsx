@@ -1,7 +1,8 @@
+import type { PropsWithChildren } from "react";
+import { Fragment } from "react";
 import Head from "next/head";
-// import { Header } from "./Header";
-import { Fragment, type PropsWithChildren } from "react";
 
+// import { Header } from "./Header";
 // import { Toaster } from "@server/components/ui/toaster";
 
 /**
@@ -60,9 +61,7 @@ Page.Content = function Content({
   className = "",
   children,
 }: PropsWithChildren<{ className?: string }>) {
-  return (
-    <div className={`flex lg:flex-1 ${className}`}>{children}</div>
-  );
+  return <div className={`flex lg:flex-1 ${className}`}>{children}</div>;
 };
 
 Page.Sidebar = function Sidebar({

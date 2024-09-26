@@ -1,12 +1,12 @@
-import { ArrowDownUp } from "lucide-react";
 import { classnames } from "@/utils/classnames";
+import { ArrowDownUp } from "lucide-react";
 
 export type PlayerOrderBy = "name" | "jersey";
 
-export type PlayerOrderListProps = {
+export interface PlayerOrderListProps {
   order: PlayerOrderBy;
   setOrder: (order: PlayerOrderBy) => void;
-};
+}
 
 export const PlayerOrderList = ({ order, setOrder }: PlayerOrderListProps) => {
   return (

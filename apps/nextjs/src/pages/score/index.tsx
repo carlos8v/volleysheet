@@ -1,8 +1,9 @@
+import type { PlayerOrderBy } from "@/components/PlayerOrderList";
 import { useState } from "react";
 import { CourtCanvas } from "@/components/CourtCanvas";
 import { Page } from "@/components/Page";
 import { PlayerCard } from "@/components/PlayerCard";
-import { PlayerOrderBy, PlayerOrderList } from "@/components/PlayerOrderList";
+import { PlayerOrderList } from "@/components/PlayerOrderList";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import useDebounce from "@/hooks/useDebounce";
 import { api } from "@/utils/api";

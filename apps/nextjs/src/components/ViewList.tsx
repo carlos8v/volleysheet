@@ -1,12 +1,12 @@
-import { LayoutGrid, List } from "lucide-react";
 import { classnames } from "@/utils/classnames";
+import { LayoutGrid, List } from "lucide-react";
 
 export type ViewOptions = "list" | "grid";
 
-export type ViewListProps = {
+export interface ViewListProps {
   view: ViewOptions;
   setView: (view: ViewOptions) => void;
-};
+}
 
 export const ViewList = ({ view, setView }: ViewListProps) => {
   return (

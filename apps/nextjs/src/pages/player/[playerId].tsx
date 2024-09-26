@@ -4,7 +4,7 @@ import type {
   InferGetServerSidePropsType,
 } from "next";
 import { Page } from "@/components/Page";
-import { PlayerDetails } from "@/components/PlayerDetailts";
+import { PlayerDetails } from "@/components/PlayerDetails";
 import { PlayerScoreChart } from "@/components/PlayerScoreChart";
 import { api } from "@/utils/api";
 import z from "zod";
@@ -13,7 +13,7 @@ export const getServerSideProps: GetServerSideProps<{
   playerId: string;
 }> = async (ctx: GetServerSidePropsContext) => {
   const schema = z.object({ playerId: z.string().uuid() });
-  const params = schema.safeParse(ctx.params);
+  const params = await schema.safeParseAsync(ctx.params);
 
   if (params.success) {
     return {
@@ -43,7 +43,7 @@ export default function PlayerPage({
     return null;
   }
 
-  if (error || !data) {
+  if (error ?? !data) {
     <p>Não foi possível recupera informações do jogador</p>;
   }
 

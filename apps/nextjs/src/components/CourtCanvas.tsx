@@ -2,11 +2,11 @@ import { useRef, useState } from "react";
 import { classnames } from "@/utils/classnames";
 import { Dribbble } from "lucide-react";
 
-export type CourtCanvasProps = {
+export interface CourtCanvasProps {
   setBallPosition: (value: { x: number; y: number }) => void;
   hasPinnedBall: boolean;
   setHasPinnedBall: (value: boolean) => void;
-};
+}
 
 export const CourtCanvas = ({
   setBallPosition,

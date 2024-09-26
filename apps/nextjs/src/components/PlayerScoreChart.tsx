@@ -21,10 +21,10 @@ const backgroundColor = "#09090b";
 const guideColor = "#52525b";
 const pointColor = "#22c55e";
 
-type PointPosition = {
+interface PointPosition {
   x: number;
   y: number;
-};
+}
 
 const drawPoint = (
   ctx: CanvasRenderingContext2D,
@@ -178,9 +178,9 @@ const draw = (
   }
 };
 
-type PlayerScoreChartProps = {
+interface PlayerScoreChartProps {
   data: { date: string; points: number }[];
-};
+}
 
 export const PlayerScoreChart = ({ data }: PlayerScoreChartProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);

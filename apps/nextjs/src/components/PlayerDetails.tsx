@@ -1,14 +1,15 @@
+import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatName } from "@/utils/formatName";
 import { positionsMap } from "@/utils/positions";
 
-import { type RouterOutputs } from "@volleysheet/api";
+import type { RouterOutputs } from "@volleysheet/api";
 
 import { PlayerStats } from "./PlayerStats";
 
-export type PlayerDetailsProps = {
+export interface PlayerDetailsProps {
   player: RouterOutputs["players"]["getById"];
-};
+}
 
 const handednessMap = new Map([
   [null, "N/A"],
@@ -37,8 +38,9 @@ export const PlayerDetails = ({ player }: PlayerDetailsProps) => {
           <div className="flex flex-col items-center justify-center">
             <p className="text-xs uppercase text-zinc-400">Nacionalidade</p>
             <p className="flex items-center font-medium">
-              <img
+              <Image
                 className="mr-0.5"
+                alt={`${player.name} profile photo`}
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Flag_of_Brazil.svg/22px-Flag_of_Brazil.svg.png"
               />
               {player?.country ?? "N/A"}

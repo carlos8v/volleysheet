@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatName } from "@/utils/formatName";
 
-export type PlayerCardProps = {
+export interface PlayerCardProps {
   jerseyNumber: number;
   name: string;
-};
+}
 
 export const PlayerCard = ({ jerseyNumber, name }: PlayerCardProps) => {
   return (

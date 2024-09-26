@@ -1,28 +1,47 @@
-import { useCallback, useState } from "react";
-import {
+import type { PlayerOrderBy } from "@/components/PlayerOrderList";
+import type { AvaliableRank } from "@/components/RankTabs";
+import type { ViewOptions } from "@/components/ViewList";
+import type {
   GetServerSideProps,
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
 } from "next";
+import { useCallback, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Page } from "@/components/Page";
 import { PlayerCard } from "@/components/PlayerCard";
-import { PlayerOrderBy, PlayerOrderList } from "@/components/PlayerOrderList";
-import { AvaliableRank, RankTabs } from "@/components/RankTabs";
-import { ViewList, ViewOptions } from "@/components/ViewList";
+import { PlayerOrderList } from "@/components/PlayerOrderList";
+import { RankTabs } from "@/components/RankTabs";
+import { ViewList } from "@/components/ViewList";
 import useDebounce from "@/hooks/useDebounce";
 import { api } from "@/utils/api";
 import { positionsMap } from "@/utils/positions";
+import z from "zod";
 
 export const getServerSideProps: GetServerSideProps<{
   rank: AvaliableRank;
 }> = async (ctx: GetServerSidePropsContext) => {
-  const { rank } = ctx.query ?? {};
+  const querySchema = z.object({
+    rank: z
+      .enum(["ALL", "S", "A", "B", "C", "D", "E"])
+      .optional()
+      .default("ALL"),
+  });
+
+  const query = await querySchema.safeParseAsync(ctx.query);
+
+  if (!query.success) {
+    return {
+      props: {
+        rank: "ALL",
+      },
+    };
+  }
 
   return {
     props: {
-      rank: (rank as AvaliableRank) ?? "ALL",
+      rank: query.data.rank,
     },
   };
 };

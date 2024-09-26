@@ -1,10 +1,10 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { classnames } from "@/utils/classnames";
 
-export type RankTabsProps = {
+export interface RankTabsProps {
   rank: AvaliableRank;
   handleClick: (rank: AvaliableRank) => void;
-};
+}
 
 export type AvaliableRank = "ALL" | "S" | "A" | "B" | "C" | "D" | "E";
 

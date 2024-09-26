@@ -2,7 +2,8 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
 import { randomUUID } from "crypto";
-import { InferSelectModel, relations, sql } from "drizzle-orm";
+import type { InferSelectModel } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   double,
   index,

@@ -60,7 +60,7 @@ export const pointsRouter = createTRPCRouter({
       const lastSaturdays: Date[] = [];
       const points = [];
 
-      let lastSaturday = new Date(today);
+      const lastSaturday = new Date(today);
       while (lastSaturday.getDay() !== 6) {
         lastSaturday.setDate(lastSaturday.getDate() - 1);
       }

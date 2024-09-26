@@ -21,8 +21,8 @@
     "typecheck": "turbo typecheck"
   },
   "devDependencies": {
-    "@volleysheet/prettier-config": "workspace:^0.1.0",
     "@turbo/gen": "^1.10.16",
+    "@volleysheet/prettier-config": "workspace:^0.1.0",
     "prettier": "^3.2.5",
     "turbo": "^1.10.16",
     "typescript": "^5.2.2"
