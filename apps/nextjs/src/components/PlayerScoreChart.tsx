@@ -108,6 +108,12 @@ const draw = (
   height = canvas.height;
   width = canvas.width;
 
+  // Update canvas based on pixel ratio
+  const ratio = Math.ceil(window.devicePixelRatio);
+  canvas.height = height * ratio;
+  canvas.width = width * ratio;
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
   // Clear screen
   ctx.clearRect(0, 0, width, height);
   ctx.fillStyle = backgroundColor;
