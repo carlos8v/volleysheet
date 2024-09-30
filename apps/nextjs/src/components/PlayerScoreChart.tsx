@@ -31,6 +31,7 @@ const drawPoint = (
   point: PointPosition,
   color = pointColor,
 ) => {
+  ctx.lineWidth = 1.5;
   ctx.strokeStyle = color;
   ctx.fillStyle = backgroundColor;
   ctx.beginPath();
@@ -40,7 +41,7 @@ const drawPoint = (
 
   ctx.fillStyle = color;
   ctx.beginPath();
-  ctx.arc(point.x + leftPadding, point.y - bottomPadding, 4, 0, Math.PI * 2);
+  ctx.arc(point.x + leftPadding, point.y - bottomPadding, 3.5, 0, Math.PI * 2);
   ctx.fill();
 };
 
@@ -59,6 +60,7 @@ const drawCurve = (
     y: p2.y,
   };
 
+  ctx.lineWidth = 1.5;
   ctx.strokeStyle = pointColor;
   ctx.beginPath();
   ctx.moveTo(p1.x + leftPadding, p1.y - bottomPadding);
