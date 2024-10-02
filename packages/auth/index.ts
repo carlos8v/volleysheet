@@ -1,10 +1,11 @@
 import type { GetServerSidePropsContext } from "next";
 import type { DefaultSession, NextAuthOptions } from "next-auth";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import bcrypt from "bcryptjs";
 import { getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-import { and, db, eq } from "@volleysheet/db";
+import { db, eq } from "@volleysheet/db";
 import * as schema from "@volleysheet/db/schema";
 
 import { env } from "./env.mjs";
@@ -73,17 +74,19 @@ export const authOptions: NextAuthOptions = {
         const [user] = await db
           .select()
           .from(schema.users)
-          .where(
-            and(
-              eq(schema.users.password, credentials?.password),
-              eq(schema.users.type, "ADMIN"),
-            ),
-          )
+          .where(eq(schema.users.type, "ADMIN"))
           .limit(1);
 
-        console.log("user found", user);
+        if (!user?.id) {
+          throw new Error("Usuário não encontrado");
+        }
 
-        if (user?.id) {
+        const validPassword = await bcrypt.compare(
+          credentials.password,
+          user.password,
+        );
+
+        if (validPassword) {
           return {
             id: user.id,
             type: user.type,
