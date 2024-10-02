@@ -1,5 +1,6 @@
 import type { PlayerOrderBy } from "@/components/PlayerOrderList";
 import { useState } from "react";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { CourtCanvas } from "@/components/CourtCanvas";
 import { Page } from "@/components/Page";
 import { PlayerCard } from "@/components/PlayerCard";
@@ -9,7 +10,27 @@ import useDebounce from "@/hooks/useDebounce";
 import { api } from "@/utils/api";
 import { classnames } from "@/utils/classnames";
 
+import { getServerAuthSession } from "@volleysheet/auth";
+
 type ScoreMode = "ATTACK" | "SERVE" | "BLOCK";
+
+export const getServerSideProps: GetServerSideProps = async (
+  ctx: GetServerSidePropsContext,
+) => {
+  const session = await getServerAuthSession(ctx);
+  if (!session?.user) {
+    return {
+      redirect: {
+        destination: "/auth/signin",
+      },
+      props: {},
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
 
 export default function Score() {
   const [query, setQuery] = useState("");
