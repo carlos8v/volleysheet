@@ -1,6 +1,6 @@
 import type { PlayerOrderBy } from "@/components/PlayerOrderList";
+import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { useState } from "react";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { CourtCanvas } from "@/components/CourtCanvas";
 import { Page } from "@/components/Page";
 import { PlayerCard } from "@/components/PlayerCard";
