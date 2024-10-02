@@ -3,10 +3,10 @@ import { z } from "zod";
 import { and, count, eq, isNotNull, sql } from "@volleysheet/db";
 import * as schema from "@volleysheet/db/schema";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const pointsRouter = createTRPCRouter({
-  score: publicProcedure
+  score: protectedProcedure
     .input(
       z.object({
         position: z.object({
