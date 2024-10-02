@@ -227,9 +227,6 @@ importers:
         specifier: ^3.22.4
         version: 3.22.4
     devDependencies:
-      '@types/bcryptjs':
-        specifier: ^2.4.6
-        version: 2.4.6
       '@volleysheet/eslint-config':
         specifier: workspace:^0.2.0
         version: link:../../tooling/eslint
@@ -2023,10 +2020,6 @@ packages:
       rimraf: 3.0.2
       semver: 7.5.4
       update-check: 1.5.4
-    dev: true
-
-  /@types/bcryptjs@2.4.6:
-    resolution: {integrity: sha512-9xlo6R2qDs5uixm0bcIqCeMCE6HiQsIyel9KQySStiyqNl2tnj2mP3DX1Nf56MD6KMenNNlBBsy3LJ7gUEQPXQ==}
     dev: true
 
   /@types/cookie@0.6.0:
