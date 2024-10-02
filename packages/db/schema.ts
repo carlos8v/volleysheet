@@ -23,6 +23,20 @@ import {
  */
 export const mysqlTable = mysqlTableCreator((name) => `volleysheet_${name}`);
 
+export const users = mysqlTable(
+  "users",
+  {
+    id: varchar("id", { length: 256 })
+      .$defaultFn(() => randomUUID())
+      .notNull(),
+    type: mysqlEnum("type", ["ADMIN", "USER"]).notNull().default("USER"),
+    password: varchar("password", { length: 256 }).notNull(),
+  },
+  (user) => ({
+    userIdIdx: index("user_id_idx").on(user.id),
+  }),
+);
+
 export const players = mysqlTable(
   "players",
   {
