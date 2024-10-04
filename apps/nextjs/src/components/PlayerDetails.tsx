@@ -20,7 +20,7 @@ const handednessMap = new Map([
 export const PlayerDetails = ({ player }: PlayerDetailsProps) => {
   return (
     <div className="flex flex-col md:flex-row">
-      <div className="mb-4 w-full border-b border-zinc-800 pb-4 md:mb-0 md:border-b-0 md:border-r md:pb-0">
+      <div className="mb-4 flex w-full flex-col border-b border-zinc-800 pb-4 md:mb-0 md:border-b-0 md:border-r md:pb-0">
         <div className="mb-4 flex w-full flex-col items-center justify-center pt-4">
           <Avatar className="mb-2 h-32 w-32">
             <AvatarImage
@@ -33,7 +33,7 @@ export const PlayerDetails = ({ player }: PlayerDetailsProps) => {
           </Avatar>
           <strong className="text-lg">{player?.name}</strong>
         </div>
-        <div className="grid grid-cols-2 gap-4 py-4 md:grid-cols-3">
+        <div className="grid flex-1 grid-cols-2 gap-4 py-4 md:grid-cols-3 md:gap-x-4 md:gap-y-2">
           <div className="flex flex-col items-center justify-center">
             <p className="text-xs uppercase text-zinc-400">Nacionalidade</p>
             <p className="flex items-center font-medium">
