@@ -5,6 +5,25 @@ import * as schema from "@volleysheet/db/schema";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
+const MAX_WEEKS = 4;
+
+function getLastSaturday() {
+  const lastSaturday = new Date();
+  while (lastSaturday.getDay() !== 6) {
+    lastSaturday.setDate(lastSaturday.getDate() - 1);
+  }
+
+  return lastSaturday;
+}
+
+function getISODateString(referenceDate: Date) {
+  const year = referenceDate.getFullYear();
+  const month = (referenceDate.getMonth() + 1).toString().padStart(2, "0");
+  const day = referenceDate.getDate().toString().padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 export const pointsRouter = createTRPCRouter({
   score: protectedProcedure
     .input(
@@ -52,20 +71,19 @@ export const pointsRouter = createTRPCRouter({
           ),
         );
     }),
-  getLastWeekendPoints: publicProcedure
-    .input(z.string().uuid())
+  getWeekendPoints: publicProcedure
+    .input(
+      z.object({
+        playerId: z.string().uuid(),
+        maxWeeks: z.number().optional().default(MAX_WEEKS),
+      }),
+    )
     .query(async ({ ctx, input }) => {
-      const today = new Date();
-
+      const lastSaturday = getLastSaturday();
       const lastSaturdays: Date[] = [];
       const points = [];
 
-      const lastSaturday = new Date(today);
-      while (lastSaturday.getDay() !== 6) {
-        lastSaturday.setDate(lastSaturday.getDate() - 1);
-      }
-
-      for (let i = 0; i < 4; i += 1) {
+      for (let i = 0; i < input.maxWeeks; i += 1) {
         const d = new Date(lastSaturday);
         d.setDate(lastSaturday.getDate() - 7 * i);
         lastSaturdays.push(d);
@@ -85,7 +103,7 @@ export const pointsRouter = createTRPCRouter({
           .from(schema.points)
           .where(
             and(
-              eq(schema.points.playerId, input),
+              eq(schema.points.playerId, input.playerId),
               sql`date(${schema.points.createdAt}) = date(${dateStr})`,
             ),
           );
@@ -96,16 +114,28 @@ export const pointsRouter = createTRPCRouter({
       return points;
     }),
   getPlayerHighscore: publicProcedure
-    .input(z.string().uuid())
+    .input(
+      z.object({
+        playerId: z.string().uuid(),
+        maxWeeks: z.number().optional().default(MAX_WEEKS),
+      }),
+    )
     .query(async ({ ctx, input }) => {
+      const referenceDate = new Date();
+      const lastSaturday = getLastSaturday();
+      referenceDate.setDate(lastSaturday.getDate() - (input.maxWeeks - 1) * 7);
+
+      const dateStr = getISODateString(referenceDate);
+
       const points = await ctx.db
         .select({
           type: schema.points.type,
           count: count(),
         })
         .from(schema.points)
+        .where(sql`date(${schema.points.createdAt}) >= date(${dateStr})`)
         .groupBy(schema.points.type, schema.points.playerId)
-        .having(sql`playerId = ${input}`);
+        .having(sql`playerId = ${input.playerId}`);
 
       return {
         attack: points.find(({ type }) => type === "ATTACK")?.count ?? 0,

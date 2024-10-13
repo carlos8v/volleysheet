@@ -36,8 +36,10 @@ export default function PlayerPage({
     playerId,
   });
 
-  const highscore = api.points.getPlayerHighscore.useQuery(playerId);
-  const lastWeekendsPoints = api.points.getLastWeekendPoints.useQuery(playerId);
+  const highscore = api.points.getPlayerHighscore.useQuery({ playerId });
+  const weekendsPoints = api.points.getWeekendPoints.useQuery({
+    playerId,
+  });
 
   if (isLoading) {
     return null;
@@ -75,7 +77,7 @@ export default function PlayerPage({
                   <p className="font-medium">{highscore.data?.block ?? 0}</p>
                 </fieldset>
                 <hr className="my-2" />
-                <PlayerScoreChart data={lastWeekendsPoints?.data ?? []} />
+                <PlayerScoreChart data={weekendsPoints?.data ?? []} />
               </div>
             </div>
           </div>
