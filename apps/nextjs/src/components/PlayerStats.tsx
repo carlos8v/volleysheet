@@ -82,13 +82,30 @@ function Polygon({
 
   return (
     <polygon
-      points={paths
-        .map(({ aX, aY }) => `${mX + aX + dX},${mY - aY + dY}`)
-        .join(", ")}
+      points={
+        guideline
+          ? paths
+              .map(({ aX, aY }) => `${mX + aX + dX},${mY - aY + dY}`)
+              .join(", ")
+          : ""
+      }
       opacity="1"
+      className="transition"
       fill={guideline ? "transparent" : "rgba(70, 194, 82, 0.25)"}
       stroke={guideline ? "#18181b" : "rgb(70, 194, 82)"}
-    ></polygon>
+    >
+      {!guideline ? (
+        <animate
+          attributeName="points"
+          dur="250ms"
+          fill="freeze"
+          from="105,105, 105,105, 105,105, 105,105, 105,105, 105,105"
+          to={paths
+            .map(({ aX, aY }) => `${mX + aX + dX},${mY - aY + dY}`)
+            .join(", ")}
+        />
+      ) : null}
+    </polygon>
   );
 }
 
