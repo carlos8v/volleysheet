@@ -2,7 +2,7 @@
   "name": "volleysheet",
   "private": true,
   "engines": {
-    "node": ">=22.14.0"
+    "node": "22.x"
   },
   "packageManager": "pnpm@8.10.5",
   "scripts": {
